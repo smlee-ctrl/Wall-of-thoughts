@@ -1,0 +1,4579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jar of Thoughts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Tailwind utility replacements (13 classes used) ── */
+    .text-xs   { font-size: .75rem;  line-height: 1rem; }
+    .text-sm   { font-size: .875rem; line-height: 1.25rem; }
+    .text-xl   { font-size: 1.25rem; line-height: 1.75rem; }
+    .text-2xl  { font-size: 1.5rem;  line-height: 2rem; }
+    .text-3xl  { font-size: 1.875rem; line-height: 2.25rem; }
+    .text-4xl  { font-size: 2.25rem; line-height: 2.5rem; }
+    .font-medium   { font-weight: 500; }
+    .font-semibold { font-weight: 600; }
+    .italic        { font-style: italic; }
+    .text-center   { text-align: center; }
+    .leading-relaxed { line-height: 1.625; }
+    .overflow-y-auto { overflow-y: auto; }
+    .flex-1    { flex: 1 1 0%; }
+    .min-w-0   { min-width: 0; }
+    .p-5       { padding: 1.25rem; }
+    .px-4      { padding-left: 1rem;  padding-right: 1rem; }
+    .py-3      { padding-top: .75rem; padding-bottom: .75rem; }
+    .py-10     { padding-top: 2.5rem; padding-bottom: 2.5rem; }
+    .mb-1      { margin-bottom: .25rem; }
+    .mb-2      { margin-bottom: .5rem; }
+    .mb-3      { margin-bottom: .75rem; }
+    .mt-1      { margin-top: .25rem; }
+    .mt-4      { margin-top: 1rem; }
+    .mt-0\.5   { margin-top: .125rem; }
+    .space-y-3 > * + * { margin-top: .75rem; }
+    .rounded-xl { border-radius: .75rem; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+  <style>
+    /* ── Tokens — PDD v3.0 ──────────────────────── */
+    :root {
+      /* Background: Warm Alabaster #FBF9F6 */
+      --bg:            oklch(97.7% 0.004 83);
+      --surface:       oklch(99%   0.002 83);
+      --surface-up:    oklch(99.5% 0.001 83);
+      --border:        oklch(88%   0.014 83);
+      --border-focus:  oklch(52%   0.060 168);
+
+      /* Text: warm neutral */
+      --text:          oklch(22%   0.016 83);
+      --text-2:        oklch(46%   0.014 83);
+      --text-3:        oklch(58%   0.010 83);
+
+      /* Primary Accent: Sage Mist #8FA09A */
+      --accent:        oklch(64%   0.030 168);
+      --accent-h:      oklch(56%   0.036 168);
+      --accent-soft:   oklch(90%   0.018 168);
+      --accent-muted:  oklch(95%   0.010 168);
+
+      /* Community Accent: Gentle Lavender #A394B0 */
+      --comm:          oklch(65%   0.052 308);
+      --comm-h:        oklch(58%   0.060 308);
+      --comm-soft:     oklch(90%   0.030 308);
+      --comm-muted:    oklch(95%   0.016 308);
+
+      /* Parchment for personal note cards */
+      --parchment:     oklch(96.5% 0.012 83);
+      --parchment-b:   oklch(87%   0.022 83);
+
+      /* Sage alias (reflected state) */
+      --sage:          oklch(60%   0.040 168);
+      --sage-soft:     oklch(93%   0.016 168);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      line-height: 1.75;
+      background-color: var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ── Particles ──────────────────────────────── */
+    #ptcl { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+    .particle { position: absolute; border-radius: 50%; pointer-events: none; animation: drift linear infinite; }
+    @keyframes drift {
+      0%   { transform: translateY(100vh) rotate(0deg);  opacity: 0; }
+      8%   { opacity: var(--op, 0.10); }
+      92%  { opacity: var(--op, 0.10); }
+      100% { transform: translateY(-80px) rotate(360deg); opacity: 0; }
+    }
+
+    /* ── Affirmation header ─────────────────────── */
+    .aff-bar {
+      background: linear-gradient(90deg,
+        oklch(94% 0.018 155 / 0.7), oklch(95% 0.010 83 / 0.6), oklch(94% 0.022 308 / 0.5));
+      border-bottom: 1px solid oklch(88% 0.018 83 / 0.6);
+    }
+
+    /* ── Hero layout ────────────────────────────── */
+    .hero-grid { display: flex; flex-direction: column; gap: 2rem; }
+    .jar-section { order: -1; }
+    @media (min-width: 900px) {
+      .hero-grid { display: grid; grid-template-columns: 1fr auto; gap: 4rem; align-items: center; }
+      .jar-section { order: 0; }
+    }
+
+    .hero-title {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-weight: 600;
+      font-size: clamp(2.6rem, 6.5vw, 3.6rem);
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── Glass jar ──────────────────────────────── */
+    .jar-scene { position: relative; display: flex; flex-direction: column; align-items: center; }
+    .jar-knob {
+      width: 36px; height: 13px;
+      background: linear-gradient(180deg, oklch(97% 0.006 83) 0%, oklch(88% 0.020 83) 100%);
+      border: 1.5px solid oklch(90% 0.016 83); border-radius: 5px 5px 0 0;
+      box-shadow: 0 -2px 6px oklch(55% 0.030 83 / 0.12);
+    }
+    .jar-lid {
+      width: 200px; height: 24px;
+      background: linear-gradient(180deg, oklch(97% 0.006 83) 0%, oklch(91% 0.016 83 / 0.85) 100%);
+      border: 1.5px solid oklch(91% 0.014 83); border-radius: 6px 6px 0 0;
+      box-shadow: inset 0 2px 6px oklch(98% 0.003 83 / 0.9), 0 -1px 8px oklch(60% 0.028 168 / 0.08);
+    }
+    .jar-body {
+      position: relative; width: 184px; height: 220px;
+      background: linear-gradient(160deg,
+        oklch(98% 0.004 83 / 0.68) 0%, oklch(93% 0.018 155 / 0.22) 55%, oklch(98% 0.003 83 / 0.58) 100%);
+      border: 2px solid oklch(95% 0.010 83 / 0.9); border-top: none;
+      border-radius: 10px 10px 46px 46px / 6px 6px 36px 36px;
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      box-shadow: inset 4px 0 14px oklch(99% 0.002 83 / 0.65), inset -3px 0 8px oklch(86% 0.020 155 / 0.18),
+        inset 0 -6px 12px oklch(86% 0.018 83 / 0.16), 5px 12px 36px oklch(50% 0.025 83 / 0.15),
+        0 2px 4px oklch(96% 0.006 83 / 0.9);
+      overflow: hidden; cursor: pointer; outline: none;
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease;
+    }
+    .jar-body::before {
+      content: ''; position: absolute; top: 8%; left: 10%; width: 20%; height: 62%;
+      background: linear-gradient(180deg, oklch(99% 0.002 83 / 0.80) 0%, oklch(99% 0.002 83 / 0.06) 100%);
+      border-radius: 50%; filter: blur(2.5px); pointer-events: none;
+    }
+    .jar-body::after {
+      content: ''; position: absolute; inset: -8px; border-radius: inherit;
+      background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+      opacity: 0; transition: opacity 0.6s ease; pointer-events: none; z-index: -1;
+    }
+    .jar-body:hover, .jar-body:focus-visible { transform: translateY(-5px) scale(1.018); }
+    .jar-body:focus-visible { box-shadow: inset 4px 0 14px oklch(99% 0.002 83 / 0.7), 0 0 0 3px var(--accent); }
+    .jar-body.has-notes::after { animation: jarGlow 3.5s ease-in-out infinite; }
+    @keyframes jarGlow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+    .jar-fill {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 100%;
+      background: linear-gradient(180deg, var(--accent-soft) 0%, oklch(88% 0.028 155 / 0.30) 100%);
+      /* scaleY instead of height — compositor-only, no layout recalculation */
+      transform-origin: bottom;
+      transform: scaleY(var(--fill, 0));
+      transition: transform 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 0 0 44px 44px;
+    }
+    .jar-notes { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 152px; height: 182px; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center; gap: 4px; padding: 4px; pointer-events: none; }
+    .note-dot { width: 19px; height: 17px; border-radius: 3px; box-shadow: 0 2px 5px oklch(0% 0 0 / 0.08); flex-shrink: 0; animation: floatDot ease-in-out infinite; }
+    @keyframes floatDot { 0%, 100% { transform: translateY(0) rotate(-1.5deg); } 50% { transform: translateY(-3px) rotate(1.5deg); } }
+
+    /* ── Drop flight ────────────────────────────── */
+    .note-flier { position: fixed; z-index: 1000; pointer-events: none; border-radius: 5px; box-shadow: 0 4px 14px oklch(0% 0 0 / 0.12); will-change: transform, opacity; }
+
+    /* ── Textarea ───────────────────────────────── */
+    .thought-ta {
+      width: 100%; background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 14px; padding: 16px 18px;
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 15px; line-height: 1.75; color: var(--text);
+      resize: none; transition: border-color 0.2s, box-shadow 0.2s; position: relative; z-index: 1;
+    }
+    .thought-ta::placeholder { color: var(--text-3); font-style: italic; }
+    .thought-ta:focus { outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 4px var(--accent-muted), 0 4px 18px oklch(50% 0.12 298 / 0.10); }
+
+    /* ── Drop confirm ───────────────────────────── */
+    .drop-confirm { font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 13px; font-style: italic; color: var(--accent); opacity: 0; transition: opacity 0.4s ease; min-height: 18px; text-align: right; margin-top: 6px; }
+    .drop-confirm.visible { opacity: 1; }
+
+    /* ── Buttons ────────────────────────────────── */
+    .btn-drop {
+      background: var(--accent); color: oklch(99% 0.003 83); border: none; border-radius: 50px;
+      padding: 13px 30px; font-family: Cochin, Georgia, 'Times New Roman', serif; font-weight: 400; font-size: 15px; letter-spacing: 0.02em;
+      cursor: pointer; white-space: nowrap; position: relative; overflow: hidden;
+      box-shadow: 0 4px 18px oklch(50% 0.040 168 / 0.30);
+      transition: background 0.2s, transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s;
+    }
+    .btn-drop::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, oklch(99% 0.004 298 / 0.12) 0%, transparent 55%); border-radius: inherit; pointer-events: none; }
+    .btn-drop:hover:not(:disabled) { background: var(--accent-h); transform: translateY(-2px) scale(1.02); box-shadow: 0 7px 24px oklch(50% 0.040 168 / 0.38); }
+    .btn-drop:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+    .btn-drop:disabled { opacity: 0.38; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-drop:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+    .btn-open {
+      background: transparent; color: var(--text-2); border: 1.5px solid var(--border); border-radius: 50px;
+      padding: 9px 22px; font-family: Cochin, Georgia, 'Times New Roman', serif; font-weight: 400; font-size: 14px; letter-spacing: 0.02em;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-open:hover { background: var(--surface); border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+    .btn-open:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+    /* ── Badge ──────────────────────────────────── */
+    .jar-badge {
+      position: absolute; top: -10px; right: -10px;
+      background: var(--accent); color: oklch(99% 0.003 83); border-radius: 50%;
+      width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 12px; font-weight: 400; box-shadow: 0 2px 8px oklch(50% 0.040 168 / 0.35);
+      pointer-events: none; z-index: 10;
+    }
+
+    /* ── Ripple ─────────────────────────────────── */
+    .ripple { position: absolute; border-radius: 50%; background: var(--accent-soft); animation: rippleOut 0.55s cubic-bezier(0, 0, 0.2, 1) forwards; pointer-events: none; }
+    @keyframes rippleOut { from { transform: scale(0); opacity: 0.7; } to { transform: scale(3.5); opacity: 0; } }
+
+    /* ── Personal note cards ────────────────────── */
+    .note-card {
+      background: var(--parchment); border: 1px solid var(--parchment-b); border-radius: 12px;
+      padding: 15px 17px; box-shadow: 0 1px 8px oklch(65% 0.06 76 / 0.10);
+      transition: box-shadow 0.25s, transform 0.25s;
+    }
+    .note-card:hover { box-shadow: 0 3px 16px oklch(65% 0.06 76 / 0.16); transform: translateY(-1px); }
+    .note-card.reflected { background: var(--sage-soft); border-color: oklch(80% 0.055 155); }
+    .note-card.releasing { animation: crumple 0.52s cubic-bezier(0.4, 0, 0.8, 0.2) forwards; }
+    @keyframes crumple {
+      0%   { transform: scale(1)    rotate(0deg);   opacity: 1;   filter: blur(0);   }
+      30%  { transform: scale(1.03) rotate(1.5deg); }
+      65%  { transform: scale(0.82) rotate(-4deg);  opacity: 0.5; filter: blur(1px); }
+      100% { transform: scale(0)    rotate(9deg);   opacity: 0;   filter: blur(4px); }
+    }
+
+    .note-text { font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 14.5px; line-height: 1.72; color: var(--text); }
+
+    .note-action {
+      font-size: 12px; font-weight: 600; font-family: Cochin, Georgia, 'Times New Roman', serif;
+      padding: 5px 12px; border-radius: 50px; border: 1.5px solid; cursor: pointer; transition: all 0.18s; white-space: nowrap;
+    }
+    .note-action.reflect   { color: var(--accent); border-color: var(--accent); background: transparent; }
+    .note-action.reflect:hover { background: var(--accent-muted); }
+    .note-action.reflected { color: var(--sage); border-color: var(--sage); background: var(--sage-soft); }
+    .note-action.release   { color: oklch(48% 0.12 15); border-color: oklch(75% 0.07 15); background: transparent; }
+    .note-action.release:hover { background: oklch(95% 0.025 15); }
+    .note-action.share-note { color: var(--text-3); border-color: var(--border); background: transparent; }
+    .note-action.share-note:hover { background: var(--accent-muted); color: var(--accent); border-color: var(--accent); }
+    .note-action.shared-note { color: var(--sage); border-color: var(--sage); background: var(--sage-soft); cursor: default; }
+    .note-action:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+    /* ── Undo toast ─────────────────────────────── */
+    .undo-toast {
+      display: none; align-items: center; justify-content: space-between;
+      padding: 11px 18px; background: var(--text); color: var(--surface);
+      border-radius: 0 0 20px 20px; font-size: 13px; font-weight: 500; gap: 12px;
+      opacity: 0; transition: opacity 0.28s ease; flex-shrink: 0;
+    }
+    .undo-toast.visible { opacity: 1; }
+    .undo-btn { font-size: 12px; font-weight: 700; font-family: Cochin, Georgia, 'Times New Roman', serif; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; background: none; border: none; color: var(--accent-soft); padding: 0; white-space: nowrap; }
+    .undo-btn:hover { color: oklch(98% 0.003 83); }
+
+    /* ══════════════════════════════════════════════
+       COMMUNITY STYLES
+    ══════════════════════════════════════════════ */
+
+    /* Section divider */
+    .section-rule { display: flex; align-items: center; gap: 16px; }
+    .section-rule-line { flex: 1; height: 1px; background: var(--border); }
+
+    /* Community cards grid — masonry columns */
+    .community-grid {
+      columns: 1; gap: 14px;
+    }
+    @media (min-width: 560px) { .community-grid { columns: 2; } }
+    @media (min-width: 900px) { .community-grid { columns: 3; } }
+
+    .community-card {
+      break-inside: avoid; margin-bottom: 14px;
+      border-radius: 14px; padding: 16px 18px; border: 1.5px solid;
+      transition: box-shadow 0.25s, transform 0.25s;
+      position: relative;
+    }
+    .community-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px oklch(60% 0.040 308 / 0.18) !important; }
+
+    .community-card-text {
+      /* Thoughts read as mini-headings — Fredoka at a comfortable reading size */
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-weight: 500;
+      font-size: 15px; line-height: 1.65; color: var(--text);
+      white-space: pre-wrap; letter-spacing: 0.01em;
+    }
+
+    /* Hold Space button — community lavender accent (UI/Counter tier) */
+    .reaction-btn {
+      font-size: 12px; font-family: Cochin, Georgia, 'Times New Roman', serif; font-weight: 400;
+      letter-spacing: 0.03em;
+      padding: 5px 13px; border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: transparent; cursor: pointer; transition: all 0.18s;
+      color: var(--text-3); display: inline-flex; align-items: center; gap: 5px;
+    }
+    .reaction-btn:hover { background: var(--comm-muted); border-color: var(--comm); color: var(--comm); }
+    .reaction-btn.reacted { background: var(--comm-muted); border-color: var(--comm); color: var(--comm); }
+    .reaction-btn .heart { transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1); }
+    .reaction-btn.reacted .heart { transform: scale(1.25); }
+    .reaction-btn:focus-visible { outline: 3px solid var(--comm); outline-offset: 2px; }
+
+    /* Lavender aura on the card when Hold Space is active (FR-03) */
+    /* Held state: static ring (no paint animation on box-shadow) */
+    .community-card.held { box-shadow: 0 0 0 2px var(--comm-soft), 0 4px 18px oklch(65% 0.052 308 / 0.18) !important; }
+    /* Breathing aura via pseudo-element — compositor-only: only opacity + transform animate */
+    .community-card.held::before {
+      content: ''; position: absolute; inset: -4px;
+      border-radius: 17px; /* 14px card radius + 3px gap */
+      border: 2.5px solid var(--comm-soft);
+      pointer-events: none;
+      animation: heldAura 2.4s ease-in-out infinite;
+      will-change: transform, opacity;
+    }
+    @keyframes heldAura {
+      0%, 100% { opacity: 0.65; transform: scale(1); }
+      50%       { opacity: 0.22; transform: scale(1.018); }
+    }
+
+    /* Local "Let it Go" button on community cards */
+    .letgo-btn {
+      font-size: 10px; font-weight: 600; font-family: Cochin, Georgia, 'Times New Roman', serif;
+      padding: 3px 9px; border-radius: 50px; border: 1px solid var(--border);
+      background: transparent; cursor: pointer; color: var(--text-3); transition: all 0.18s;
+      /* Touch target: min 44px tap height without expanding the visual pill */
+      min-height: 44px; display: inline-flex; align-items: center;
+    }
+    @media (pointer: fine) {
+      /* Restore compact size on pointer devices — touch target not needed */
+      .letgo-btn { min-height: unset; }
+    }
+    .letgo-btn:hover { border-color: oklch(65% 0.06 22); color: oklch(55% 0.08 22); background: oklch(96% 0.018 22); }
+
+    /* Hide keyboard hints on touch-primary devices — irrelevant and confusing */
+    @media (pointer: coarse) {
+      .kbd-hint { display: none; }
+    }
+
+    /* Community card local dismiss animation */
+    .community-card.local-releasing { animation: crumple 0.52s cubic-bezier(0.4, 0, 0.8, 0.2) forwards; }
+
+    /* Share link copy button — Nunito (body/label tier) */
+    .copy-link-btn {
+      font-size: 11px; font-weight: 600; font-family: Cochin, Georgia, 'Times New Roman', serif;
+      padding: 4px 10px; border-radius: 50px; border: 1.5px solid var(--border);
+      background: transparent; cursor: pointer; color: var(--text-3); transition: all 0.18s;
+    }
+    .copy-link-btn:hover { border-color: var(--comm); color: var(--comm); background: var(--comm-muted); }
+
+    /* Community entry animation */
+    .community-card.new-entry { animation: slideIn 0.38s cubic-bezier(0.22, 1, 0.36, 1); }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(12px) scale(0.97); } to { opacity: 1; transform: none; } }
+
+    /* "Load more" / empty community */
+    .community-empty { text-align: center; padding: 48px 24px; color: var(--text-3); }
+
+    /* ── Shared note banner (URL param) ─────────── */
+    .share-banner {
+      background: linear-gradient(135deg, oklch(94% 0.022 308), oklch(95% 0.014 155));
+      border: 1.5px solid oklch(86% 0.036 308); border-radius: 18px; padding: 20px 22px;
+      animation: slideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ── Modals ─────────────────────────────────── */
+    .backdrop {
+      position: fixed; inset: 0; background: oklch(20% 0.010 83 / 0.42);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      z-index: 500; display: flex; align-items: center; justify-content: center;
+      padding: 20px; animation: fadeIn 0.22s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal-box {
+      background: var(--surface-up); border-radius: 22px; width: 100%; max-width: 540px;
+      max-height: 82vh; overflow: hidden; display: flex; flex-direction: column;
+      box-shadow: 0 28px 80px oklch(30% 0.012 83 / 0.20), 0 4px 16px oklch(0% 0 0 / 0.06);
+      animation: slideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes slideUp { from { transform: translateY(20px) scale(0.97); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+    .modal-head { padding: 20px 22px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    /* 44×44px tap target; visual circle stays 30px via padding+negative margin */
+    .modal-close {
+      width: 44px; height: 44px; margin: -7px -7px -7px auto;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      background: transparent; border: none; cursor: pointer;
+      color: var(--text-3); transition: background 0.15s, color 0.15s;
+    }
+    .modal-close:hover { background: var(--accent-muted); color: var(--text); }
+    .modal-close:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 50%; }
+
+    /* ── Help floater ───────────────────────────── */
+    .help-floater { position: fixed; bottom: 22px; right: 22px; width: 42px; height: 42px; border-radius: 50%; background: var(--surface); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 14px oklch(50% 0.08 298 / 0.18); transition: all 0.2s; z-index: 200; color: var(--text-2); }
+    .help-floater:hover { transform: scale(1.1); box-shadow: 0 6px 20px oklch(50% 0.08 298 / 0.30); background: var(--accent-muted); color: var(--accent); }
+    .help-floater:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 50%; }
+
+    /* ── Helpline cards ─────────────────────────── */
+    .helpline-card { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--border); text-decoration: none; transition: transform 0.15s, box-shadow 0.15s; }
+    .helpline-card:hover { transform: translateY(-1px); box-shadow: 0 4px 14px oklch(50% 0.08 298 / 0.12); }
+
+    /* ── MH strip ───────────────────────────────── */
+    .mh-strip { display: flex; align-items: center; gap: 14px; }
+    .mh-rule  { flex: 1; height: 1px; background: var(--border); }
+
+    /* ── Scrollbar ──────────────────────────────── */
+    .scroll::-webkit-scrollbar { width: 4px; }
+    .scroll::-webkit-scrollbar-track { background: transparent; }
+    .scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+
+    .char-warn { color: oklch(48% 0.14 22) !important; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+    }
+
+    /* ══════════════════════════════════════════════
+       LANDING SECTIONS
+    ══════════════════════════════════════════════ */
+
+    .landing-section {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: oklch(99.5% 0.001 83);
+      position: relative;
+      padding: clamp(3rem, 7vw, 6rem) clamp(1.5rem, 5vw, 3rem);
+    }
+
+    /* ── Handwriting text effect ── */
+    .hw-text { visibility: hidden; }
+    .hw-text.hw-running, .hw-text.hw-done { visibility: visible; }
+    .hw-char { display: inline; }
+    .hw-cursor {
+      display: inline-block; width: 1.5px; height: 0.88em;
+      background: currentColor; vertical-align: text-bottom;
+      margin-left: 2px;
+      animation: hwBlink 0.55s step-end infinite;
+    }
+    .hw-cursor.hw-fin { display: none; }
+    @keyframes hwBlink { 50% { opacity: 0; } }
+
+    /* ── Pen writing effect (title only) ─────────── */
+    /* Each character written by the pen gets an ink-spread entrance */
+    .hw-pen .hw-char {
+      opacity: 0;
+      display: inline;
+      animation: penInk 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes penInk {
+      0%   { opacity: 0; filter: blur(3px); transform: translateY(3px) scale(0.92); }
+      55%  { opacity: 1; filter: blur(0.4px); transform: translateY(0) scale(1.01); }
+      100% { opacity: 1; filter: blur(0);    transform: translateY(0) scale(1); }
+    }
+
+    /* Pen nib cursor — replaces the blinking bar for the title */
+    .pen-nib-cursor {
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 5px;
+      margin-bottom: 6px;
+      transform-origin: bottom center;
+      animation: nibBob 0.28s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    @keyframes nibBob {
+      from { transform: rotate(-12deg) translateY(0); }
+      to   { transform: rotate(-7deg)  translateY(-2px); }
+    }
+    /* After finishing, pen lifts off */
+    .pen-nib-cursor.hw-fin {
+      animation: nibLift 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes nibLift {
+      0%   { opacity: 1; transform: rotate(-7deg) translateY(-2px); }
+      60%  { opacity: 0.6; transform: rotate(-20deg) translateY(-10px) scale(0.85); }
+      100% { opacity: 0;   transform: rotate(-25deg) translateY(-16px) scale(0.7); display: none; }
+    }
+
+    /* ── Handwritten SVG loop — intro slides ──── */
+    .intro-wrap {
+      /* Constrained container so the oval wraps the text, not the viewport */
+      position: relative;
+      width: min(880px, 90vw);
+      padding: clamp(5rem, 9vw, 9rem) clamp(5rem, 8vw, 8rem);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      text-align: center;
+    }
+    /* SVG fills only the .intro-wrap box — scales with text */
+    .intro-loop-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .intro-loop-path {
+      fill: none;
+      stroke: #111;
+      stroke-width: 3px;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.75;
+      vector-effect: non-scaling-stroke;
+      /* dasharray/dashoffset set by JS via getTotalLength() */
+    }
+
+    /* ── Landing 1 — Figma 6:23 exact layout ── */
+    #landing-1 .l1-inner {
+      /* 845px Figma width — full responsive with 24px gap between items */
+      width: min(845px, 100% - 2rem);
+      display: flex; flex-direction: column;
+      align-items: center; gap: 24px;
+      text-align: center;
+    }
+
+    /* Title — Cochin Bold 57px (Figma 4:7) */
+    .l1-title {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: clamp(2.4rem, 5.5vw, 3.5625rem); /* 57px = 3.5625rem */
+      font-weight: bold; line-height: 1.05;
+      color: #000; margin: 0; width: 100%;
+    }
+
+    /* Subtitle — Cochin Regular 32px (Figma 4:5) */
+    .l1-sub {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: clamp(1.2rem, 2.6vw, 2rem); /* 32px = 2rem */
+      font-weight: 400; line-height: 1.4;
+      color: #000; margin: 0; width: 100%;
+    }
+
+    /* Textarea box — 845×170px, border #424141, radius 10, padding 15 */
+    .l1-ta-wrap {
+      width: 100%; height: 170px;
+      border: 1px solid #424141; border-radius: 10px;
+      padding: 15px;
+      display: flex; flex-direction: column;
+      justify-content: space-between;
+      background: transparent;
+      box-sizing: border-box;
+    }
+    .l1-ta-top {
+      display: flex; align-items: flex-start;
+      gap: 10px; flex: 1;
+    }
+    #l1-ta {
+      flex: 1; border: none; background: transparent; resize: none;
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 16px; line-height: 1.5; color: #424141;
+      padding: 0; overflow: hidden;
+    }
+    #l1-ta:focus { outline: none; }
+    #l1-ta::placeholder { color: #424141; font-style: normal; }
+    /* clear (×) button — top right of textarea */
+    .l1-clear {
+      flex-shrink: 0; width: 24px; height: 24px;
+      background: none; border: none; cursor: pointer; padding: 0;
+      color: #424141; display: flex; align-items: center; justify-content: center;
+    }
+    .l1-clear:hover { opacity: 0.7; }
+    /* Bottom toolbar */
+    .l1-ta-foot {
+      display: flex; align-items: center;
+      justify-content: space-between;
+    }
+    .l1-ta-icons { display: flex; align-items: center; gap: 7px; }
+    .l1-icon {
+      color: #424141; cursor: pointer; background: none; border: none;
+      padding: 0; display: flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px;
+    }
+    .l1-icon:hover { opacity: 0.7; }
+    /* Send (↑) — bare icon, matches Figma line-md:arrow-up */
+    .l1-send {
+      width: 23px; height: 24px;
+      background: none; border: none; cursor: pointer; padding: 0;
+      color: #424141; display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.15s;
+    }
+    .l1-send:hover:not(:disabled) { opacity: 0.6; }
+    .l1-send:disabled { opacity: 0.25; cursor: not-allowed; }
+
+    /* Name input — 845×50, same border */
+    .l1-name {
+      width: 100%; height: 50px; background: transparent;
+      border: 1px solid #424141; border-radius: 10px;
+      padding: 15px;
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 16px;
+      color: rgba(0,0,0,0.54);
+      box-sizing: border-box;
+    }
+    .l1-name::placeholder { color: rgba(0,0,0,0.54); font-style: normal; }
+    .l1-name:focus { outline: none; border-color: #000; }
+
+    /* Hint text */
+    .l1-hint-text {
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 16px;
+      color: rgba(66,65,65,0.54);
+    }
+    .l1-confirm {
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 14px;
+      color: #424141; min-height: 18px;
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .l1-confirm.visible { opacity: 1; }
+
+    /* Crisis footer */
+    .l1-crisis {
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 12px;
+      color: rgba(66,65,65,0.6); text-align: center;
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 12px 20px;
+      border-top: 1px solid rgba(66,65,65,0.15);
+    }
+    .l1-crisis a { color: rgba(66,65,65,0.85); text-decoration: underline; text-underline-offset: 2px; }
+    .l1-crisis a:hover { color: #000; }
+
+    /* ── Landing 2 (4:14) — Voice and feelings ── */
+    #landing-2 .l2-title {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: clamp(2rem, 5.5vw, 3.8rem);
+      font-weight: 400; line-height: 1.25;
+      color: oklch(10% 0.006 83);
+      letter-spacing: -0.015em;
+      text-align: center; max-width: 18ch; margin: 0;
+    }
+
+    /* ── Origami fold before flight — multi-stage natural paper fold ── */
+    @keyframes origamiFold {
+      0%   { transform: perspective(600px) scaleY(1)    rotateX(0deg)   translateY(0px);   opacity: 1; }
+      12%  { transform: perspective(600px) scaleY(0.88) rotateX(18deg)  translateY(-3px);  opacity: 1; }
+      28%  { transform: perspective(600px) scaleY(0.52) rotateX(48deg)  translateY(-9px);  opacity: 1; }
+      44%  { transform: perspective(600px) scaleY(0.22) rotateX(72deg)  translateY(-15px); opacity: 1; }
+      58%  { transform: perspective(600px) scaleY(0.16) rotateX(80deg)  translateY(-16px); opacity: 0.92; }
+      /* paper crinkles back slightly before re-opening */
+      68%  { transform: perspective(600px) scaleY(0.28) rotateX(68deg)  translateY(-12px); opacity: 1; }
+      80%  { transform: perspective(600px) scaleY(0.62) rotateX(38deg)  translateY(-7px);  opacity: 1; }
+      92%  { transform: perspective(600px) scaleY(0.88) rotateX(12deg)  translateY(-2px);  opacity: 1; }
+      100% { transform: perspective(600px) scaleY(1)    rotateX(0deg)   translateY(0px);   opacity: 1; }
+    }
+    .note-flier.folding {
+      transform-style: preserve-3d;
+      animation: origamiFold 0.72s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    /* ── Jar jostle keyframe ────────────────────────── */
+    @keyframes jostleDot {
+      0%   { transform: translate(0,0) rotate(0deg); }
+      18%  { transform: translate(var(--jx,5px), var(--jy,-4px)) rotate(var(--jr,8deg)); }
+      45%  { transform: translate(calc(var(--jx,5px)*-0.4), calc(var(--jy,-4px)*-0.3)) rotate(calc(var(--jr,8deg)*-0.4)); }
+      72%  { transform: translate(calc(var(--jx,5px)*0.15), calc(var(--jy,-4px)*0.1)) rotate(calc(var(--jr,8deg)*0.15)); }
+      100% { transform: translate(0,0) rotate(0deg); }
+    }
+    .note-dot.jostling {
+      animation: jostleDot 0.62s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+    }
+
+    /* ── Handle input ───────────────────────────────── */
+    .handle-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 13px; color: var(--text);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin-top: 8px;
+    }
+    .handle-input::placeholder { color: var(--text-3); font-style: italic; }
+    .handle-input:focus { outline: none; border-color: var(--border-focus); box-shadow: 0 0 0 3px var(--accent-muted); }
+
+    /* ── Content policy hint ────────────────────────── */
+    .policy-hint {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 11px; font-style: italic;
+      color: var(--text-3); text-align: center;
+      margin-top: 9px; letter-spacing: 0.01em;
+    }
+
+    /* ── Parchment pull card overlay ────────────────── */
+    #pull-overlay { z-index: 600; }
+    .pull-card {
+      background: var(--parchment);
+      border: 1px solid var(--parchment-b);
+      border-radius: 20px;
+      padding: clamp(24px, 5vw, 40px) clamp(22px, 5vw, 38px) clamp(20px, 4vw, 30px);
+      max-width: 480px; width: 100%;
+      position: relative;
+      box-shadow: 0 6px 40px oklch(50% 0.020 83 / 0.18), 0 2px 8px oklch(0% 0 0 / 0.07);
+      animation: pullCardIn 0.44s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes pullCardIn {
+      from { transform: translateY(18px) scale(0.96) rotate(-1.2deg); opacity: 0; }
+      to   { transform: none; opacity: 1; }
+    }
+    /* Subtle torn-top paper effect */
+    .pull-card::before {
+      content: '';
+      position: absolute; top: -1px; left: 0; right: 0; height: 6px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 480 6' preserveAspectRatio='none'%3E%3Cpath d='M0 3 C20 0 40 6 70 3 C100 0 130 5 170 2 C210 -1 260 5 310 3 C360 1 400 6 440 3 C460 1.5 470 4 480 3 L480 6 L0 6Z' fill='%23F5F0E8'/%3E%3C/svg%3E") no-repeat top center / 100% 100%;
+      border-radius: 20px 20px 0 0;
+      pointer-events: none;
+    }
+    .pull-eyebrow {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-3); margin: 0 0 18px;
+    }
+    .pull-text {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: clamp(1.1rem, 3vw, 1.45rem);
+      font-weight: 500; line-height: 1.58;
+      color: var(--text); margin: 0 0 10px;
+      white-space: pre-wrap;
+    }
+    .pull-handle {
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 12px; font-style: italic;
+      color: var(--text-3); margin: 0 0 26px; min-height: 1.2em;
+    }
+    .pull-actions {
+      display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; align-items: center;
+    }
+    .pull-hold-btn {
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 13px; font-weight: 400;
+      letter-spacing: 0.03em;
+      padding: 8px 18px; border-radius: 50px;
+      border: 1.5px solid var(--comm-soft);
+      background: transparent; cursor: pointer;
+      color: var(--comm); transition: background 0.18s, border-color 0.18s, transform 0.18s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .pull-hold-btn:hover { background: var(--comm-muted); border-color: var(--comm); transform: scale(1.04); }
+    .pull-hold-btn.held { background: var(--comm-muted); border-color: var(--comm); }
+    .pull-hold-btn:focus-visible { outline: 3px solid var(--comm); outline-offset: 2px; border-radius: 50px; }
+    .pull-return-btn {
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 13px; font-weight: 600;
+      padding: 8px 20px; border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: transparent; cursor: pointer; color: var(--text-2);
+      transition: background 0.18s, border-color 0.18s;
+    }
+    .pull-return-btn:hover { background: var(--accent-muted); border-color: var(--accent); color: var(--accent); }
+    .pull-return-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+    /* ── Crisis footer strip ────────────────────────── */
+    .crisis-footer {
+      text-align: center;
+      padding: 13px 20px;
+      background: oklch(95.5% 0.012 155 / 0.55);
+      border-top: 1px solid var(--border);
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 12px; color: var(--text-2);
+    }
+    .crisis-link {
+      color: var(--accent-h); font-weight: 700; text-decoration: none;
+      border-bottom: 1px solid var(--accent-soft);
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .crisis-link:hover { color: var(--accent); border-color: var(--accent); }
+
+    @media (max-width: 899px) {
+      .jar-body { width: 162px; height: 194px; }
+      .jar-lid  { width: 178px; }
+      .jar-knob { width: 32px; }
+      .jar-notes { width: 134px; height: 158px; }
+    }
+
+    /* ── Brush stroke text effect ───────────────────── */
+    /* Reveals left-to-right via clip-path, matching the intro SVG draw aesthetic */
+    .brush, .brush-comm, .brush-hero {
+      position: relative;
+      display: inline;
+    }
+    .brush::after, .brush-comm::after, .brush-hero::after {
+      content: '';
+      position: absolute;
+      left: -4px; right: -4px;
+      bottom: -0.08em;
+      height: 0.44em;
+      clip-path: inset(0 101% 0 0);
+      animation: brushReveal 0.82s cubic-bezier(0.22, 1, 0.36, 1) var(--brush-delay, 0.4s) both;
+      pointer-events: none;
+      z-index: -1;
+    }
+    /* Sage — personal / hero content */
+    .brush::after {
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 400 20'%3E%3Cpath d='M3 13 C50 8 120 6 200 12 C280 18 350 13 395 10 C397 9.5 399 12 399 14' stroke='%238FA09A' stroke-width='11' stroke-linecap='round' fill='none' opacity='.55'/%3E%3Cpath d='M3 17 C70 13 160 11 250 16 C330 20 378 16 399 17' stroke='%238FA09A' stroke-width='5' stroke-linecap='round' fill='none' opacity='.28'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+    }
+    /* Lavender — community / question content */
+    .brush-comm::after {
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 400 20'%3E%3Cpath d='M3 13 C50 8 120 6 200 12 C280 18 350 13 395 10 C397 9.5 399 12 399 14' stroke='%23A394B0' stroke-width='11' stroke-linecap='round' fill='none' opacity='.55'/%3E%3Cpath d='M3 17 C70 13 160 11 250 16 C330 20 378 16 399 17' stroke='%23A394B0' stroke-width='5' stroke-linecap='round' fill='none' opacity='.28'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+    }
+    /* Hero — thicker, more painterly for large headings */
+    .brush-hero::after {
+      bottom: -0.13em;
+      height: 0.55em;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none' viewBox='0 0 400 26'%3E%3Cpath d='M2 17 C60 10 145 8 225 15 C305 22 368 16 396 12 C398 11.5 399 15 399 17' stroke='%238FA09A' stroke-width='18' stroke-linecap='round' fill='none' opacity='.38'/%3E%3Cpath d='M4 22 C90 18 200 15 295 20 C362 24 391 20 399 21' stroke='%238FA09A' stroke-width='8' stroke-linecap='round' fill='none' opacity='.22'/%3E%3C/svg%3E") no-repeat center / 100% 100%;
+    }
+    @keyframes brushReveal {
+      from { clip-path: inset(0 101% 0 0); }
+      to   { clip-path: inset(0 0%   0 0); }
+    }
+
+    /* ── Appear on scroll / load effect ────────────── */
+    .appear {
+      opacity: 0;
+      transform: translateY(22px);
+      transition:
+        opacity   0.70s cubic-bezier(0.22, 1, 0.36, 1) var(--appear-delay, 0s),
+        transform 0.70s cubic-bezier(0.22, 1, 0.36, 1) var(--appear-delay, 0s);
+    }
+    .appear.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* Stagger shorthand helpers */
+    .appear-d1 { --appear-delay: 0.08s; }
+    .appear-d2 { --appear-delay: 0.16s; }
+    .appear-d3 { --appear-delay: 0.24s; }
+    .appear-d4 { --appear-delay: 0.32s; }
+
+    /* ── Audio Chat FAB ─────────────────────────────── */
+    .chat-fab {
+      position: fixed; bottom: 22px; left: 22px;
+      width: 46px; height: 46px; border-radius: 50%;
+      background: var(--comm); color: oklch(99% 0.002 308);
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 18px oklch(65% 0.052 308 / 0.34);
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s, background 0.2s;
+      z-index: 300;
+    }
+    .chat-fab:hover { transform: scale(1.1); box-shadow: 0 6px 24px oklch(65% 0.052 308 / 0.46); }
+    .chat-fab:focus-visible { outline: 3px solid var(--comm); outline-offset: 3px; border-radius: 50%; }
+    .chat-fab.panel-open { background: var(--comm-h); transform: scale(0.92); }
+
+    /* ── Chat Panel ─────────────────────────────────── */
+    #chat-panel {
+      position: fixed; bottom: 0; left: 50%;
+      /* always flex but hidden via visibility + transform */
+      display: flex; flex-direction: column;
+      width: min(100%, 440px);
+      max-height: 76vh;
+      background: var(--surface);
+      border: 1px solid var(--border); border-bottom: none;
+      border-radius: 22px 22px 0 0;
+      box-shadow: 0 -8px 48px oklch(0% 0 0 / 0.10);
+      z-index: 400;
+      visibility: hidden; pointer-events: none;
+      transform: translateX(-50%) translateY(calc(100% + 4px));
+      transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+                  visibility 0s linear 0.38s;
+    }
+    #chat-panel.open {
+      visibility: visible; pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+      transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+                  visibility 0s linear 0s;
+    }
+
+    .chat-header {
+      padding: 16px 18px 13px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .chat-title {
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 1.1rem; font-weight: 600;
+      color: var(--text); margin: 0 0 2px; line-height: 1.2;
+    }
+    .chat-sub {
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 12px;
+      color: var(--text-3); margin: 0;
+    }
+
+    .chat-messages {
+      flex: 1; overflow-y: auto; padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+      scroll-behavior: smooth;
+    }
+    .chat-messages::-webkit-scrollbar { width: 4px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+
+    .chat-msg {
+      max-width: 84%; padding: 11px 14px; border-radius: 15px;
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 14px;
+      line-height: 1.65; margin: 0;
+      animation: msgIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.97); }
+      to   { opacity: 1; transform: none; }
+    }
+    .chat-msg.user {
+      align-self: flex-end; color: var(--text);
+      background: var(--parchment); border: 1px solid var(--parchment-b);
+      border-bottom-right-radius: 4px;
+    }
+    .chat-msg.echo {
+      align-self: flex-start; color: var(--text-2);
+      background: var(--comm-muted); border: 1px solid var(--comm-soft);
+      border-bottom-left-radius: 4px; font-style: italic;
+    }
+    .msg-text { margin: 0; }
+    .msg-actions { display: flex; justify-content: flex-end; margin-top: 7px; }
+    .msg-drop-btn {
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 10px; font-weight: 700;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      color: var(--accent); background: transparent;
+      border: 1px solid var(--accent-soft); padding: 3px 10px;
+      border-radius: 50px; cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      /* touch target */
+      min-height: 30px; display: inline-flex; align-items: center;
+    }
+    .msg-drop-btn:hover:not(:disabled) { background: var(--accent-muted); }
+    .msg-drop-btn:disabled { opacity: 0.45; cursor: default; }
+
+    /* Recording state bar */
+    .chat-rec-bar {
+      padding: 7px 16px; flex-shrink: 0;
+      background: oklch(95% 0.018 22 / 0.5);
+      display: flex; align-items: center; gap: 9px;
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 12px;
+      color: oklch(44% 0.16 22);
+    }
+    .rec-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: oklch(56% 0.18 22); flex-shrink: 0;
+      animation: recPulse 1.1s ease-in-out infinite;
+    }
+    @keyframes recPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.45; transform: scale(0.7); }
+    }
+
+    /* Input area */
+    .chat-input-area {
+      padding: 10px 12px 16px; border-top: 1px solid var(--border);
+      background: var(--surface-up); flex-shrink: 0;
+      border-radius: 0 0 22px 22px;
+    }
+    .chat-input-row {
+      display: flex; align-items: flex-end; gap: 7px;
+      background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 16px; padding: 8px 8px 8px 14px;
+      transition: border-color 0.2s;
+    }
+    .chat-input-row:focus-within { border-color: var(--border-focus); }
+
+    #chat-ta {
+      flex: 1; resize: none; border: none; background: transparent;
+      font-family: Cochin, Georgia, 'Times New Roman', serif; font-size: 14px;
+      color: var(--text); line-height: 1.55; padding: 2px 0;
+      max-height: 120px; overflow-y: auto;
+    }
+    #chat-ta:focus { outline: none; }
+    #chat-ta::placeholder { color: var(--text-3); }
+
+    .chat-mic-btn, .chat-send-btn {
+      width: 36px; height: 36px; border-radius: 50%; border: none;
+      cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
+    }
+    .chat-mic-btn { background: var(--comm-muted); color: var(--comm); }
+    .chat-mic-btn:hover { background: var(--comm-soft); }
+    .chat-mic-btn:focus-visible { outline: 3px solid var(--comm); outline-offset: 2px; border-radius: 50%; }
+    .chat-mic-btn.recording {
+      background: oklch(93% 0.025 22); color: oklch(50% 0.18 22);
+      animation: micGlow 1.2s ease-in-out infinite;
+    }
+    @keyframes micGlow {
+      0%, 100% { box-shadow: 0 0 0 0 oklch(56% 0.18 22 / 0.45); }
+      50%       { box-shadow: 0 0 0 9px oklch(56% 0.18 22 / 0); }
+    }
+    .chat-mic-btn.no-speech { opacity: 0.32; cursor: not-allowed; }
+
+    .chat-send-btn { background: var(--comm-muted); color: var(--text-3); }
+    .chat-send-btn:not(:disabled) { background: var(--comm); color: oklch(99% 0.002 308); }
+    .chat-send-btn:not(:disabled):hover { background: var(--comm-h); transform: scale(1.06); }
+    .chat-send-btn:disabled { cursor: not-allowed; }
+    .chat-send-btn:focus-visible { outline: 3px solid var(--comm); outline-offset: 2px; border-radius: 50%; }
+
+    /* ── Intro overlay ─────────────────────────────── */
+    #intro-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: oklch(97.7% 0.004 83); /* --bg warm alabaster */
+    }
+    .intro-slide {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: clamp(3rem, 10vw, 8rem) clamp(2rem, 8vw, 6rem);
+      transition: opacity 0.9s ease;
+    }
+    .intro-text {
+      /* Figma 4:3 & 4:15 — Cochin Regular, 57px, centered, black */
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: clamp(1.6rem, 3.8vw, 2.8rem);
+      font-weight: 400; line-height: 1.45;
+      color: #000; text-align: center;
+      max-width: 38ch;
+      letter-spacing: 0;
+      /* start hidden — JS fades in before drawing the pen loop */
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .intro-text.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ══ Screens ══════════════════════════════════════ */
+    .app-screen {
+      min-height: 100vh;
+      width: 100%;
+      background: #fff;
+      position: relative;
+      /* overflow-x clips lateral bleed; overflow-y stays visible so hover previews
+         can escape above/below without being cut off */
+      overflow-x: clip;
+      overflow-y: visible;
+    }
+
+    /* ── Screen nav ── */
+    .screen-nav {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 36px 15px 5px; /* top: 36px leaves room below the 30px policy bar */
+      z-index: 20;
+    }
+    .screen-nav-btn {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 14px;
+      color: #000;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      letter-spacing: 0.01em;
+    }
+    .screen-nav-btn:hover { text-decoration: underline; }
+    .screen-nav-btn:focus-visible { outline: 2px solid #000; outline-offset: 3px; border-radius: 3px; }
+
+    /* ── Crisis footer ── */
+    .screen-crisis {
+      position: absolute;
+      bottom: 18px;
+      left: 0; right: 0;
+      text-align: center;
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 13px;
+      color: rgba(0,0,0,0.45);
+      pointer-events: none;
+      z-index: 10;
+    }
+    .screen-crisis a { color: rgba(0,0,0,0.6); pointer-events: auto; }
+
+    /* ══ Screen 1 — Wall of thoughts (4:4) ══════════════ */
+    #screen-wall { display: flex; }
+
+    /* Scattered decorative note images */
+    /* .wall-deco-img is now inside .wall-deco-img-wrap; wrapper handles hover/transition */
+    .wall-deco-img {
+      display: block;
+      width: 100%;
+      pointer-events: none;
+      user-select: none;
+    }
+    /* Pendulum dangle — swings around the pin at top center */
+    @keyframes note-dangle {
+      0%   { transform: rotate(var(--rot, 0deg)) scale(1.06); }
+      22%  { transform: rotate(calc(var(--rot, 0deg) + 11deg)) scale(1.06); }
+      55%  { transform: rotate(calc(var(--rot, 0deg) - 8deg)) scale(1.06); }
+      75%  { transform: rotate(calc(var(--rot, 0deg) + 4deg)) scale(1.06); }
+      90%  { transform: rotate(calc(var(--rot, 0deg) - 2deg)) scale(1.06); }
+      100% { transform: rotate(var(--rot, 0deg)) scale(1.06); }
+    }
+
+    .wall-deco-img-wrap {
+      position: absolute;
+      /* Figma: notes are 8.67% of 1440px canvas width (~125px) */
+      width: clamp(90px, 8.67%, 145px);
+      transform: rotate(var(--rot, 0deg));
+      transform-origin: top center;
+      transition:
+        transform 0.28s cubic-bezier(0.34, 1.4, 0.64, 1),
+        filter 0.22s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+    .wall-deco-img-wrap--lg { width: clamp(100px, 9.7%, 155px); }
+    .wall-deco-img-wrap:hover:not(.dragging),
+    .wall-deco-img-wrap:focus-visible:not(.dragging) {
+      animation: dangle 0.7s ease-in-out;
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,0.18));
+      z-index: 20;
+      outline: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .wall-deco-img-wrap:hover:not(.dragging),
+      .wall-deco-img-wrap:focus-visible:not(.dragging) {
+        animation: none;
+        transform: scale(1.06);
+      }
+    }
+    .wall-deco-img-wrap:focus-visible { outline: 2px solid #000; outline-offset: 4px; border-radius: 6px; }
+    /* While being dragged: no hover transform, grabbing cursor, floats above everything */
+    .wall-deco-img-wrap.dragging,
+    .journal-note-wrap.dragging {
+      animation: none !important;
+      cursor: grabbing !important;
+      transition: none !important;
+      z-index: 50 !important;
+      filter: drop-shadow(0 16px 32px rgba(0,0,0,0.22));
+    }
+
+    /* Center block — Figma 4:4: top=396/1024≈38.7%, centered horizontally, width=754px */
+    .wall-center-block {
+      position: absolute;
+      top: 42%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      text-align: center;
+      z-index: 10;
+      width: min(557px, 88vw);
+    }
+    .wall-title {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 34px;
+      font-weight: bold;
+      color: #000;
+      margin: 0;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+    .wall-subtitle {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 16px;
+      color: #000;
+      margin: 0;
+      max-width: 493px;
+      line-height: 1.4;
+    }
+    .wall-write-btn {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 16px;
+      color: #2a2a2a;
+      background: transparent;
+      border: 1px solid #424141;
+      border-radius: 10px;
+      height: 50px;
+      min-width: 133px;
+      padding: 0 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+    }
+    .wall-write-btn:hover {
+      background: rgba(42, 42, 42, 0.06);
+      color: #000;
+      transform: translateY(-1px);
+    }
+    .wall-write-btn:focus-visible {
+      outline: 2px solid #2a2a2a;
+      outline-offset: 4px;
+      border-radius: 10px;
+    }
+
+    /* ── Pin dot on scattered notes ── */
+    .wall-pin-dot {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 32px;
+      z-index: 2;
+      pointer-events: none;
+      display: block;
+    }
+
+    /* ══ Screen 3 — My Self-reflecting Journal (19:695) ══ */
+    #screen-journal { display: none; }
+
+    .journal-deco { position: absolute; inset: 0; pointer-events: none; }
+    .journal-note-wrap {
+      position: absolute;
+      /* Match wall-note-filled / wall-deco-img-wrap so all notes look identical */
+      width: clamp(90px, 8.67vw, 145px);
+    }
+    .journal-note-wrap--md { width: clamp(100px, 9.7vw, 155px); }
+    .journal-note-img {
+      display: block;
+      width: 100%;
+      pointer-events: none;
+      user-select: none;
+    }
+    .journal-center-block {
+      position: absolute;
+      top: 43%; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      text-align: center;
+      z-index: 10;
+      width: min(420px, 88vw);
+    }
+    .journal-title {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 34px;
+      font-weight: bold;
+      color: #000;
+      margin: 0;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+    .journal-subtitle {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 25px;
+      color: #000;
+      margin: 0;
+      max-width: 420px;
+      line-height: 1.4;
+    }
+
+    /* ══ Screen 2 — Create a Sticky Note (12:72) ════════ */
+    #screen-form { display: none; }
+
+    .form-layout {
+      min-height: 100vh;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .form-left {
+      position: relative;
+      z-index: 5;
+      margin-left: clamp(20px, 6.6vw, 95px);
+      margin-right: clamp(20px, 4vw, 40px);
+      margin-top: 80px;
+      margin-bottom: 60px;
+      width: min(716px, 100%);
+      background: #fefcfc;
+      border-radius: 20px;
+      padding: clamp(28px, 3vw, 44px) clamp(20px, 2.5vw, 36px);
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    @media (min-width: 720px) {
+      .form-left { width: min(716px, 52vw); }
+    }
+    @media (max-width: 719px) {
+      .form-deco-wrap { display: none; }
+    }
+    .form-title {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 34px;
+      font-weight: bold;
+      color: #000;
+      margin: 0 0 24px;
+      line-height: 1.1;
+    }
+    .form-label {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 16px;
+      color: #000;
+      display: block;
+      margin-bottom: 10px;
+    }
+    .form-input {
+      width: 100%;
+      height: 50px;
+      border: 1px solid #424141;
+      border-radius: 10px;
+      padding: 0 15px;
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 16px;
+      color: #000;
+      background: transparent;
+      box-sizing: border-box;
+      margin-bottom: 22px;
+      outline: none;
+    }
+    .form-input::placeholder { color: #424141; }
+    .form-input:focus { border-color: #111; box-shadow: 0 0 0 3px rgba(143,160,154,0.18); }
+
+    .form-ta-outer {
+      border: 1px solid #424141;
+      border-radius: 10px;
+      padding: 15px;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 8px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-ta-outer:focus-within { border-color: #111; box-shadow: 0 0 0 3px rgba(143,160,154,0.18); }
+    .form-textarea {
+      width: 100%;
+      min-height: 120px;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 16px;
+      color: #000;
+      background: transparent;
+      line-height: 1.5;
+      padding: 0;
+    }
+    .form-textarea::placeholder { color: #424141; }
+    .form-ta-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+    .form-ta-icons { display: flex; align-items: center; gap: 7px; }
+    .form-icon-btn {
+      background: none; border: none; cursor: pointer; padding: 0;
+      color: #424141; display: flex; align-items: center;
+      opacity: 1;
+    }
+    .form-icon-btn:hover { opacity: 0.6; }
+    .form-send-btn {
+      background: none; border: none; cursor: pointer; padding: 0;
+      color: #000; display: flex; align-items: center;
+      opacity: 0.35;
+      transition: opacity 0.15s;
+    }
+    .form-send-btn:not(:disabled) { opacity: 1; }
+
+    .form-check-row {
+      display: flex; align-items: center; gap: 12px;
+      margin-top: 12px; cursor: pointer;
+    }
+    .form-checkbox {
+      appearance: none; -webkit-appearance: none;
+      width: 22px; height: 22px;
+      background: #111; border: none; border-radius: 3px;
+      cursor: pointer; flex-shrink: 0; position: relative;
+    }
+    .form-checkbox::after {
+      content: '';
+      position: absolute;
+      left: 6px; top: 3px;
+      width: 7px; height: 11px;
+      border: 2.5px solid #fff;
+      border-top: none; border-left: none;
+      transform: rotate(40deg);
+    }
+    .form-checkbox:not(:checked) { background: transparent; border: 1px solid #424141; }
+    .form-checkbox:not(:checked)::after { display: none; }
+    .form-check-label {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 14px;
+      color: #424141;
+    }
+
+    .form-btn-row {
+      display: flex; align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 20px;
+      width: 100%;
+    }
+    .form-btn-back {
+      height: 50px; padding: 0 24px;
+      border: 1px solid #424141; border-radius: 10px;
+      background: transparent;
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 16px; color: rgba(66,66,66,0.54); cursor: pointer;
+    }
+    .form-btn-back:hover { border-color: #111; color: #000; }
+    .form-btn-back:focus-visible { outline: 2px solid #000; outline-offset: 3px; border-radius: 10px; }
+    .form-btn-write {
+      height: 50px; padding: 0 24px;
+      border: 1px solid #424141; border-radius: 10px;
+      background: #000;
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 16px; color: #fff; cursor: pointer;
+    }
+    .form-btn-write:disabled { opacity: 0.38; cursor: not-allowed; }
+    .form-btn-write:not(:disabled):hover { background: #222; }
+    .form-btn-write:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 10px; }
+
+    /* Decorative note — right side */
+    .form-deco-wrap {
+      position: absolute;
+      right: 3%;
+      top: 0; bottom: 0;
+      width: 38%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .form-deco-svg {
+      width: 100%;
+      max-width: 420px;
+      height: auto;
+      filter: drop-shadow(4px 8px 28px rgba(0,0,0,0.13));
+    }
+    /* ── Form entry animations ── */
+    @keyframes note-unfold {
+      0%   { transform: rotate(-4deg) rotateX(-90deg); opacity: 0.6; }
+      60%  { transform: rotate(-4deg) rotateX(8deg);  opacity: 1; }
+      80%  { transform: rotate(-4deg) rotateX(-3deg); }
+      100% { transform: rotate(-4deg) rotateX(0deg);  }
+    }
+    @keyframes form-fields-in {
+      0%   { opacity: 0; transform: translateY(14px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-deco-wrap {
+      perspective: 900px;
+      perspective-origin: top center;
+    }
+    .form-deco-note {
+      width: min(500px, 34vw);
+      transform: rotate(-4deg);
+      transform-origin: top center;
+      transform-style: preserve-3d;
+      filter: drop-shadow(6px 12px 28px rgba(0,0,0,0.10));
+    }
+    .form-deco-note.animating {
+      animation: note-unfold 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    .form-left.animating {
+      animation: form-fields-in 0.5s ease forwards;
+      animation-delay: 0.3s;
+      opacity: 0;
+    }
+
+    /* ── Flying note submit animation ── */
+    /* ── Note-flyer: fold → fly → unfold + pin ── */
+    #note-flyer-mover {
+      position: fixed;
+      width: 0; height: 0;
+      z-index: 9999;
+      pointer-events: none;
+    }
+    #note-flyer-folder {
+      position: absolute;
+      transform-origin: center center;
+      transform-style: preserve-3d;
+      will-change: transform, opacity;
+    }
+    #note-flyer-folder img.flyer-img { width: 100%; display: block; }
+    #note-flyer-folder .flyer-pin {
+      position: absolute;
+      top: -14px; left: 50%;
+      transform: translateX(-50%);
+      width: 36px; height: auto;
+      opacity: 0;
+    }
+    @keyframes pin-drop {
+      0%   { transform: translateX(-50%) translateY(-28px) scale(0.6); opacity: 0; }
+      55%  { transform: translateX(-50%) translateY(4px)  scale(1.1); opacity: 1; }
+      75%  { transform: translateX(-50%) translateY(-4px) scale(0.95); }
+      100% { transform: translateX(-50%) translateY(0)    scale(1);   opacity: 1; }
+    }
+    @keyframes note-land {
+      0%   { transform: scale(1.15) rotate(var(--rot,0deg)); }
+      55%  { transform: scale(0.94) rotate(var(--rot,0deg)); }
+      100% { transform: scale(1)    rotate(var(--rot,0deg)); }
+    }
+    .wall-deco-img-wrap.just-landed,
+    .journal-note-wrap.just-landed {
+      animation: note-land 0.5s cubic-bezier(0.34, 1.3, 0.64, 1) forwards;
+    }
+    .wall-deco-img-wrap.just-landed .wall-pin-dot,
+    .journal-note-wrap.just-landed .wall-pin-dot {
+      animation: pin-drop 0.5s cubic-bezier(0.34, 1.3, 0.64, 1) 0.05s both;
+    }
+
+    /* ══ Hover-replace: inline note popover ══════════════ */
+    .note-popover {
+      position: fixed;
+      z-index: 999;
+      background: #fff;
+      border: 1.5px solid #111;
+      border-radius: 10px;
+      padding: 14px 16px 12px;
+      width: 230px;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.16);
+      opacity: 0;
+      transform: translateY(-8px) scale(0.96);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+      pointer-events: none;
+    }
+    .note-popover.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+    .note-popover-header {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 11px;
+      color: #888;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin: 0 0 8px;
+    }
+    .note-popover-ta {
+      width: 100%;
+      min-height: 78px;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 13.5px;
+      color: #111;
+      line-height: 1.55;
+      background: transparent;
+      padding: 0;
+    }
+    .note-popover-ta::placeholder { color: #bbb; }
+    .note-popover-divider {
+      height: 1px;
+      background: rgba(0,0,0,0.10);
+      margin: 10px 0 10px;
+    }
+    .note-popover-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .note-popover-char {
+      font-family: Cochin, Georgia, serif;
+      font-size: 11px;
+      color: #bbb;
+    }
+    .note-popover-actions { display: flex; gap: 8px; align-items: center; }
+    .note-popover-cancel {
+      background: none; border: none; cursor: pointer;
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 12px; color: #999; padding: 4px 6px;
+    }
+    .note-popover-cancel:hover { color: #111; }
+    .note-popover-pin {
+      background: #111; color: #fff; border: none;
+      border-radius: 7px; cursor: pointer;
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 12px; padding: 6px 14px;
+      transition: background 0.15s;
+    }
+    .note-popover-pin:hover:not(:disabled) { background: #333; }
+    .note-popover-pin:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* ── Filled wall note — identical width rule as blank writing slots ── */
+    .wall-note-filled {
+      position: absolute;
+      /* Exact same responsive width as .wall-deco-img-wrap so they look identical */
+      width: clamp(90px, 8.67%, 145px);
+      transform: rotate(var(--rot, 0deg));
+      transform-origin: top center;
+      transition:
+        transform 0.30s cubic-bezier(0.34, 1.4, 0.64, 1),
+        filter 0.22s ease;
+      cursor: grab;
+      /* Height is determined by the contained SVG image's natural aspect ratio */
+    }
+    .wall-note-filled.dragging {
+      cursor: grabbing;
+      transition: none;
+      z-index: 50;
+    }
+    .wall-note-filled:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 6px; }
+    /* The SVG note image fills the whole slot (identical to blank notes) */
+    .wall-note-bg-img {
+      display: block;
+      width: 100%;
+      height: auto;
+      pointer-events: none;
+      user-select: none;
+    }
+    .wall-note-filled:hover:not(.dragging):not(.phys-driven) {
+      animation: dangle 0.7s ease-in-out;
+      filter: drop-shadow(0 10px 28px rgba(0,0,0,0.18));
+      z-index: 25;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .wall-note-filled:hover:not(.dragging):not(.phys-driven) {
+        animation: none;
+        transform: scale(1.06);
+      }
+    }
+
+    /* ── Physics sleeping module — wall notes ── */
+    /* phys-driven: physics owns transform+position; disable CSS transform transitions */
+    .wall-note-filled.phys-driven {
+      transform-origin: center center !important;
+      transition: filter 0.5s ease, opacity 0.45s ease;
+      cursor: grab;
+    }
+    /* Sleeping: note is at rest on the wall — subtle calm state */
+    .wall-note-filled.phys-sleeping {
+      filter: drop-shadow(0 1px 4px rgba(0,0,0,0.07));
+      opacity: 0.88;
+    }
+    /* Awake: note is settling after being touched */
+    .wall-note-filled.phys-awake {
+      filter: drop-shadow(0 7px 20px rgba(0,0,0,0.16));
+      opacity: 1;
+    }
+    /* Grabbed: note is being dragged */
+    .wall-note-filled.phys-grab {
+      cursor: grabbing !important;
+      filter: drop-shadow(0 16px 36px rgba(0,0,0,0.30)) !important;
+      opacity: 1;
+      transition: none;
+    }
+    /* Hover on sleeping note — gentle lift hint without breaking physics transform */
+    .wall-note-filled.phys-sleeping:hover {
+      filter: drop-shadow(0 5px 14px rgba(0,0,0,0.14));
+      opacity: 0.97;
+      z-index: 25;
+    }
+
+
+    /* Hint overlay that appears on deco-img hover — cursor is pointer since clicking opens form */
+    .wall-deco-img-wrap .wall-deco-img {
+      display: block;
+      width: 100%;
+      transform: none !important;
+      transition: none !important;
+    }
+    .wall-deco-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      opacity: 0;
+      transition: opacity 0.2s ease 0.05s;
+      pointer-events: none;
+    }
+    .wall-deco-img-wrap:hover .wall-deco-hint { opacity: 1; }
+    .wall-deco-hint-icon {
+      width: 24px; height: 24px;
+      border: 1.5px solid rgba(0,0,0,0.7);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: rgba(0,0,0,0.7);
+      font-family: sans-serif; line-height: 1;
+      background: rgba(255,255,255,0.85);
+    }
+    .wall-deco-hint-label {
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 10px;
+      color: rgba(0,0,0,0.65);
+      background: rgba(255,255,255,0.85);
+      padding: 1px 5px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+
+    /* ══ Dangle hover on pinned notes ══════════════════ */
+    @keyframes dangle {
+      0%   { transform: rotate(var(--rot,0deg)) translateY(0); }
+      25%  { transform: rotate(calc(var(--rot,0deg) + 4deg)) translateY(3px); }
+      75%  { transform: rotate(calc(var(--rot,0deg) - 4deg)) translateY(3px); }
+      100% { transform: rotate(var(--rot,0deg)) translateY(0); }
+    }
+    .journal-note-wrap:hover:not(.dragging),
+    .journal-note-wrap:focus-visible:not(.dragging) {
+      animation: dangle 0.7s ease-in-out;
+      z-index: 20;
+      outline: none;
+      cursor: grab;
+      filter: drop-shadow(0 8px 22px rgba(0,0,0,0.18));
+    }
+    /* hover text preview badge — kept in DOM but hidden; JS floater takes over */
+    .note-hover-preview { display: none; }
+
+    /* ── Floating hover preview — fixed overlay, escapes all stacking contexts ── */
+    #note-float-preview {
+      position: fixed;
+      z-index: 9000;
+      pointer-events: none;
+      /* pill shape matching the screenshot */
+      background: #fff;
+      border: 1.5px solid rgba(0,0,0,0.12);
+      border-radius: 22px;
+      padding: 10px 18px;
+      max-width: 220px;
+      min-width: 100px;
+      font-family: 'Caveat', cursive;
+      font-size: 15px;
+      font-style: italic;
+      color: #222;
+      line-height: 1.45;
+      text-align: center;
+      white-space: pre-wrap;
+      word-break: break-word;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.07);
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    #note-float-preview.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ══ Note expand modal ══════════════════════════════ */
+    #note-expand-modal {
+      position: fixed; inset: 0; z-index: 10000;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(4px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    #note-expand-modal.open { opacity: 1; pointer-events: auto; }
+
+    .note-expand-card {
+      position: relative;
+      width: min(480px, 90vw);
+      padding-top: 26px; /* room for the pin to overlap the paper top */
+      /* No CSS transition — WAAPI drives all open/close animations */
+      will-change: transform, opacity;
+    }
+    /* Backdrop: CSS handles the resting states; WAAPI runs open/close motion on top */
+
+    /* ── Pin entrance: drops from above with a satisfying thunk ── */
+    @keyframes pinDrop {
+      0%   { transform: translateX(-50%) translateY(-30px) scale(0.5); opacity: 0; }
+      55%  { transform: translateX(-50%) translateY(6px)  scale(1.12); opacity: 1; }
+      78%  { transform: translateX(-50%) translateY(-4px) scale(0.96); }
+      100% { transform: translateX(-50%) translateY(0)    scale(1);    opacity: 1; }
+    }
+    .note-expand-modal--animating .note-expand-pin {
+      animation: pinDrop 0.52s cubic-bezier(0.22, 1, 0.36, 1) 0.18s both;
+    }
+    /* Paper ruled lines fade in after card arrives */
+    .note-expand-modal--animating .note-expand-paper {
+      animation: paperReveal 0.38s ease 0.22s both;
+    }
+    @keyframes paperReveal {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* Pin image */
+    .note-expand-pin {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      line-height: 0;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+    }
+    .note-expand-pin img {
+      display: block;
+      width: 56px;
+      height: auto;
+    }
+
+    /* White ruled paper */
+    .note-expand-paper {
+      position: relative;
+      background: #fff;
+      border: 5px solid #0d0d0d;
+      border-radius: 5px;
+      box-shadow: 4px 8px 32px rgba(0,0,0,0.22);
+      /* --lh MUST match .note-expand-text line-height in px */
+      --lh: 52px;
+      padding: 48px 32px 40px 36px;
+      /*
+        Repeating ruled lines: one 2px rule per --lh cycle.
+        background-origin: content-box → gradient starts at padding edge.
+        background-position shifts so the FIRST rule is at (--lh - 2px) from
+        the content top, i.e. at the bottom of the first line-height slot.
+      */
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(var(--lh) - 2px),
+        rgba(0,0,0,0.18) calc(var(--lh) - 2px),
+        rgba(0,0,0,0.18) var(--lh)
+      );
+      background-origin: content-box;
+      background-position: 0 0;
+      min-height: 370px;
+    }
+
+    .note-expand-text-area {
+      /*
+        Nudge text down so its baseline sits ON the first rule.
+        With font-size 22px, line-height 52px:
+          half-leading = (52−22)/2 = 15px above
+          Caveat baseline from line-box-top ≈ 15 + 22×0.82 ≈ 33px
+          First rule sits at (lh−2) = 50px from content top
+          → push text down by 50−33 = 17px so baseline hits the rule
+      */
+      padding-top: 17px;
+    }
+
+    .note-expand-text {
+      font-family: 'Caveat', cursive;
+      font-size: 22px;
+      font-weight: 500;
+      color: #1a1a1a;
+      line-height: var(--lh);   /* matches paper gradient cycle exactly */
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 0;
+    }
+    .note-expand-meta {
+      font-family: 'Caveat', cursive;
+      font-size: 15px;
+      color: #888;
+      margin: 6px 0 0;
+      line-height: 1.4;
+    }
+    .note-expand-close {
+      position: absolute;
+      top: 30px; right: 12px;
+      background: none; border: none; cursor: pointer;
+      font-size: 18px; color: #aaa; padding: 4px 8px;
+      transition: color 0.15s; z-index: 5;
+    }
+    .note-expand-close:hover { color: #111; }
+    .note-expand-close:focus-visible { outline: 2px solid #111; outline-offset: 2px; border-radius: 4px; }
+    .note-expand-letgo {
+      display: block;
+      margin: 20px auto 0;
+      background: none;
+      border: 1.2px solid rgba(0,0,0,0.18);
+      border-radius: 20px;
+      padding: 8px 22px;
+      font-family: 'Caveat', cursive;
+      font-size: 1.05rem;
+      color: #888;
+      cursor: pointer;
+      transition: color 0.18s, border-color 0.18s, transform 0.18s;
+    }
+    .note-expand-letgo:hover {
+      color: #c0392b;
+      border-color: #c0392b;
+      transform: translateY(-1px);
+    }
+
+    /* ══ Empty state for walls ══════════════════════════ */
+    .wall-empty-state {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .wall-empty-state.visible { opacity: 1; }
+    .wall-empty-state svg { opacity: 0.18; }
+    .wall-empty-state p {
+      font-family: 'Caveat', cursive;
+      font-size: 1.3rem;
+      color: rgba(0,0,0,0.3);
+      text-align: center;
+      max-width: 220px;
+      line-height: 1.4;
+    }
+
+    /* ══ Journal note card (data-driven) ═══════════════ */
+    .journal-note-wrap {
+      position: absolute;
+      transform-origin: top center;
+      transition: filter 0.22s ease;
+      cursor: pointer;
+    }
+    .journal-note-wrap .journal-note-img { display: block; width: 100%; }
+
+    /* ══ Policy footer ══════════════════════════════════ */
+    /* Global policy notice — fixed bar centered at top, all screens */
+    .policy-top-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 16px;
+      text-align: center;
+      font-family: Cochin, Georgia, 'Times New Roman', serif;
+      font-size: 14px;
+      color: #000;
+      background: oklch(99% 0.002 83 / 0.95);
+      pointer-events: none;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    @media (max-width: 719px) {
+      .policy-top-bar { font-size: 11px; padding: 4px 12px; }
+    }
+    .policy-top-bar a { color: inherit; text-decoration: underline; pointer-events: auto; }
+
+
+
+  </style>
+</head>
+<body>
+
+<!-- ══ GLOBAL POLICY NOTICE — centered at top on all screens ══ -->
+<div class="policy-top-bar" role="note" aria-label="Community guidelines">
+  This is a safe, moderated space. No profanity, hate speech, or personally identifying information. &nbsp;&middot;&nbsp; <a href="https://www.iasp.info/resources/Crisis_Centres/" target="_blank" rel="noopener">Crisis resources</a> &nbsp;&middot;&nbsp; Content may be reviewed for safety.
+</div>
+<!-- ══ INTRO OVERLAY ══ -->
+<div id="intro-overlay" role="presentation" aria-hidden="true">
+  <div id="intro-s1" class="intro-slide">
+    <div class="intro-wrap">
+      <!-- SVG lives inside the wrap so the oval hugs the text block -->
+      <svg class="intro-loop-svg" viewBox="0 0 1200 600" aria-hidden="true" preserveAspectRatio="none">
+        <path class="intro-loop-path" id="intro-loop-stat"
+          d="M 950 90
+             C 1250 300, 1050 480, 600 520
+             C 250 520, 150 480, 150 300
+             C 150 120, 350 80, 600 80
+             C 850 80, 950 180, 950 180"/>
+      </svg>
+      <p id="intro-stat" class="intro-text">More than 720,000 people die by suicide every year - one death roughly every 43 seconds.</p>
+    </div>
+  </div>
+  <div id="intro-s2" class="intro-slide" style="opacity:0;pointer-events:none;">
+    <div class="intro-wrap">
+      <svg class="intro-loop-svg" viewBox="0 0 1200 600" aria-hidden="true" preserveAspectRatio="none">
+        <path class="intro-loop-path" id="intro-loop-voice"
+          d="M 940 95
+             C 1240 310, 1040 490, 590 525
+             C 240 525, 145 482, 148 302
+             C 152 118, 355 76, 605 78
+             C 858 78, 940 182, 940 182"/>
+      </svg>
+      <p id="intro-voice" class="intro-text">Your voice and feelings matter</p>
+    </div>
+  </div>
+</div>
+
+<!-- SVG filter for hand-drawn sketch effect -->
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <filter id="sketch-filter" x="-4%" y="-4%" width="108%" height="108%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.032 0.038" numOctaves="4" seed="7" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.8" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <!-- Pencil-stroke filter — tuned for borders: organic wobble, tight grain -->
+    <filter id="pencil-stroke" x="-6%" y="-12%" width="112%" height="124%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.042 0.068" numOctaves="3" seed="11" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.6" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- ══ SCREEN 1: Wall of thoughts (4:4) ══ -->
+<div id="screen-wall" class="app-screen">
+
+  <nav class="screen-nav">
+    <button class="screen-nav-btn" id="wall-nav-btn">My Wall</button>
+  </nav>
+
+  <!-- Scattered notes — exact pixel positions from Figma 4:4 (1440×1024 canvas) -->
+  <!-- Positions derived from Figma Vector inset: top=top%, left=left% of canvas -->
+  <div id="wall-deco" aria-hidden="false">
+    <!-- ── Wall notes ── filled defaults + empty writing slots ──────────────── -->
+    <!-- All use the same clamp(90px,8.67%,145px) width via CSS class -->
+
+    <!-- Default note A: top-left cluster -->
+    <div class="wall-note-filled" style="left:5.5%;top:13%;--rot:-5deg;" data-default="true" tabindex="0" role="button" aria-label="View note">
+      <img class="wall-note-bg-img" src="assets/note-center.svg" width="154" height="156" aria-hidden="true" alt="">
+      <img class="wall-pin-dot" src="assets/pin.svg" width="38" height="39" aria-hidden="true" alt="">
+      <div class="note-hover-preview">Some days the goal is just to make it to the next one. And that's enough.</div>
+    </div>
+
+    <!-- Default note B: top-center-left -->
+    <div class="wall-note-filled" style="left:26%;top:8%;--rot:3deg;" data-default="true" tabindex="0" role="button" aria-label="View note">
+      <img class="wall-note-bg-img" src="assets/note-center.svg" width="154" height="156" aria-hidden="true" alt="">
+      <img class="wall-pin-dot" src="assets/pin.svg" width="38" height="39" aria-hidden="true" alt="">
+      <div class="note-hover-preview">You are not alone in this, even when it feels that way.</div>
+    </div>
+
+    <!-- Empty writing slot: top-center -->
+    <div class="wall-deco-img-wrap" style="left:44%;top:6%;--rot:-2deg" tabindex="0" role="button" aria-label="Write your note here">
+      <img class="wall-pin-dot" src="assets/pin.svg" width="38" height="39" aria-hidden="true" alt="">
+      <img class="wall-deco-img" src="assets/note-center.svg" width="154" height="156" alt="">
+      <div class="wall-deco-hint"><span class="wall-deco-hint-icon">+</span><span class="wall-deco-hint-label">Write here</span></div>
+    </div>
+
+    <!-- Default note C: top-right-center -->
+    <div class="wall-note-filled" style="left:62%;top:7%;--rot:5deg;" data-default="true" tabindex="0" role="button" aria-label="View note">
+      <img class="wall-note-bg-img" src="assets/note-center.svg" width="154" height="156" aria-hidden="true" alt="">
+      <img class="wall-pin-dot" src="assets/pin.svg" width="38" height="39" aria-hidden="true" alt="">
+      <div class="note-hover-preview">Your feelings are valid. Your pain is real. You matter.</div>
+    </div>
+
+    <!-- Empty writing slot: top-right -->
+    <div class="wall-deco-img-wrap" style="left:80%;top:12%;--rot:-4deg" tabindex="0" role="button" aria-label="Write your note here">
+      <img class="wall-pin-dot" src="assets/pin.svg" width="38" height="39" aria-hidden="true" alt="">
+      <img class="wall-deco-img" src="assets/note-center.svg" width="154" height="156" alt="">
+      <div class="wall-deco-hint"><span class="wall-deco-hint-icon">+</span><span class="wall-deco-hint-label">Write here</span></div>
+    </div>
+
+    <!-- Default note D: mid-left -->
+    <div class="wall-note-filled" style="left:3%;top:55%;--rot:4deg;" data-default="true" tabindex="0" role="button" aria-label="View note">
+      <img class="wall-note-bg-img" src="assets/note-center.svg" width="154" height="156" aria-hidden="true" alt="">
+      <img class="wall-pin-dot" src="assets/pin.svg" width="38" height="39" aria-hidden="true" alt="">
+      <div class="note-hover-preview">Rest is not giving up. Rest is how you keep going.</div>
+    </div>
+
+    <!-- Empty writing slot: mid-right -->
+    <div class="wall-deco-img-wrap" style="left:85%;top:52%;--rot:3deg" tabindex="0" role="button" aria-label="Write your note here">
+      <img class="wall-pin-dot" src="assets/pin.svg" width="38" height="39" aria-hidden="true" alt="">
+      <img class="wall-deco-img" src="assets/note-center.svg" width="154" height="156" alt="">
+      <div class="wall-deco-hint"><span class="wall-deco-hint-icon">+</span><span class="wall-deco-hint-label">Write here</span></div>
+    </div>
+
+    <!-- Default note E: bottom-left -->
+    <div class="wall-note-filled" style="left:8%;top:72%;--rot:-6deg;" data-default="true" tabindex="0" role="button" aria-label="View note">
+      <img class="wall-note-bg-img" src="assets/note-center.svg" width="154" height="156" aria-hidden="true" alt="">
+      <img class="wall-pin-dot" src="assets/pin.svg" width="38" height="39" aria-hidden="true" alt="">
+      <div class="note-hover-preview">Progress isn't always visible. Sometimes healing happens in the quiet.</div>
+    </div>
+
+    <!-- Empty writing slot: bottom-center -->
+    <div class="wall-deco-img-wrap wall-deco-img-wrap--lg" style="left:46%;top:76%;--rot:4deg" tabindex="0" role="button" aria-label="Write your note here">
+      <img class="wall-pin-dot" src="assets/pin.svg" width="38" height="39" aria-hidden="true" alt="">
+      <img class="wall-deco-img" src="assets/note-center.svg" width="154" height="156" alt="">
+      <div class="wall-deco-hint"><span class="wall-deco-hint-icon">+</span><span class="wall-deco-hint-label">Write here</span></div>
+    </div>
+
+    <!-- Empty writing slot: bottom-right -->
+    <div class="wall-deco-img-wrap" style="left:74%;top:70%;--rot:-3deg" tabindex="0" role="button" aria-label="Write your note here">
+      <img class="wall-pin-dot" src="assets/pin.svg" width="38" height="39" aria-hidden="true" alt="">
+      <img class="wall-deco-img" src="assets/note-center.svg" width="154" height="156" alt="">
+      <div class="wall-deco-hint"><span class="wall-deco-hint-icon">+</span><span class="wall-deco-hint-label">Write here</span></div>
+    </div>
+  </div>
+
+  <!-- Center block — Figma: title + subtitle + button only, no center note image -->
+  <div class="wall-center-block">
+    <h1 class="wall-title">Wall of thoughts</h1>
+    <p class="wall-subtitle">Pour your worries in.&nbsp;&nbsp;Let the wall carry what you don't have to.</p>
+    <button class="wall-write-btn" id="wall-write-btn">Write your note</button>
+  </div>
+
+  <p class="screen-crisis">
+    If you're in crisis, <a href="tel:988">call or text 988</a>
+    &nbsp;&middot;&nbsp; <a href="sms:741741?body=HOME">Text HOME to 741741</a>
+    &nbsp;&middot;&nbsp; <a href="https://www.iasp.info/resources/Crisis_Centres/" target="_blank" rel="noopener">International resources</a>
+  </p>
+</div>
+
+<!-- ══ SCREEN 2: Create a Sticky Note (12:72) ══ -->
+<div id="screen-form" class="app-screen" style="display:none">
+
+  <nav class="screen-nav">
+    <button class="screen-nav-btn" id="form-nav-btn">My Notes</button>
+  </nav>
+
+  <div class="form-layout">
+    <!-- Left: form card -->
+    <div class="form-left">
+      <h1 class="form-title">Create a Sticky Note</h1>
+
+      <label class="form-label" for="l1-name-input">Name</label>
+      <input type="text" id="l1-name-input" class="form-input"
+        maxlength="60" placeholder="Write your name">
+
+      <label class="form-label" for="l1-ta">Thoughts</label>
+      <div class="form-ta-outer">
+        <textarea id="l1-ta" class="form-textarea" maxlength="280"
+          placeholder="Write freely. This is your safe space"
+          aria-label="Write your thought"></textarea>
+        <div class="form-ta-footer">
+          <div class="form-ta-icons">
+            <button class="form-icon-btn" id="l1-mic" aria-label="Voice input">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+              </svg>
+            </button>
+            <button class="form-icon-btn" aria-label="Attach" tabindex="-1">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+              </svg>
+            </button>
+          </div>
+          <button class="form-send-btn" id="l1-send" disabled aria-label="Submit">
+            <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="19" x2="12" y2="5"/>
+              <polyline points="5 12 12 5 19 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <label class="form-check-row">
+        <input type="checkbox" class="form-checkbox" id="l1-share" checked>
+        <span class="form-check-label">Share Sticky Note?</span>
+      </label>
+      <label class="form-check-row">
+        <input type="checkbox" class="form-checkbox" id="l1-showname" checked>
+        <span class="form-check-label">Show my Name?</span>
+      </label>
+
+      <div class="form-btn-row">
+        <button class="form-btn-back" id="l1-back">Back</button>
+        <button class="form-btn-write" id="l1-write" disabled>Write</button>
+      </div>
+
+      <p id="l1-confirm" aria-live="polite" style="text-align:center;font-family:Cochin,Georgia,serif;font-size:0.9rem;color:#444;margin:8px 0 0;min-height:1.4em;"></p>
+    </div>
+
+    <!-- Right: large decorative note -->
+    <div class="form-deco-wrap" aria-hidden="true">
+      <img class="form-deco-svg" src="assets/note-sticky1.svg" width="747" height="702" alt="">
+    </div>
+  </div>
+
+  <p class="screen-crisis">
+    If you're in crisis, <a href="tel:988">call or text 988</a>
+    &nbsp;&middot;&nbsp; <a href="sms:741741?body=HOME">Text HOME to 741741</a>
+    &nbsp;&middot;&nbsp; <a href="https://www.iasp.info/resources/Crisis_Centres/" target="_blank" rel="noopener">International resources</a>
+  </p>
+</div>
+
+<!-- ══ SCREEN 3: My Self-reflecting Journal (Figma 19:695) ══ -->
+<div id="screen-journal" class="app-screen" style="display:none">
+
+  <nav class="screen-nav">
+    <button class="screen-nav-btn" id="journal-nav-btn">Public Wall</button>
+  </nav>
+
+  <!-- Dynamic notes rendered by JS from localStorage -->
+  <div id="journal-notes-container" aria-label="Your private notes">
+    <!-- notes injected here by renderJournalNotes() -->
+    <div class="wall-empty-state" id="journal-empty-state">
+      <svg width="52" height="52" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+        <rect x="10" y="8" width="32" height="38" rx="3" stroke="#111" stroke-width="2"/>
+        <line x1="16" y1="18" x2="36" y2="18" stroke="#111" stroke-width="1.5"/>
+        <line x1="16" y1="25" x2="36" y2="25" stroke="#111" stroke-width="1.5"/>
+        <line x1="16" y1="32" x2="28" y2="32" stroke="#111" stroke-width="1.5"/>
+      </svg>
+      <p>Your wall is empty.<br>Write your first note.</p>
+    </div>
+  </div>
+
+  <!-- Center block: Figma top=450px/1080px≈41.7%, centered -->
+  <div class="journal-center-block">
+    <p class="journal-subtitle">Pour your worries in.&nbsp;&nbsp;Let the wall carry what you don't have to.</p>
+    <button class="wall-write-btn" id="journal-write-btn">Write your note</button>
+  </div>
+
+  <p class="screen-crisis">
+    If you're in crisis, <a href="tel:988">call or text 988</a>
+    &nbsp;&middot;&nbsp; <a href="sms:741741?body=HOME">Text HOME to 741741</a>
+    &nbsp;&middot;&nbsp; <a href="https://www.iasp.info/resources/Crisis_Centres/" target="_blank" rel="noopener">International resources</a>
+  </p>
+</div>
+
+<!-- ── Support floater ── -->
+<button class="help-floater" id="help-btn" aria-label="Mental health support resources">
+  <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+    <path d="M10 17C10 17 3 12.5 3 7.5C3 5.42 4.79 4 6.85 4C8.07 4 9.15 4.6 10 5.5C10.85 4.6 11.93 4 13.15 4C15.21 4 17 5.42 17 7.5C17 12.5 10 17 10 17Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<!-- Floating hover preview — escapes all overflow/stacking contexts -->
+<div id="note-float-preview" aria-hidden="true"></div>
+
+<!-- Screen-reader live region — visually hidden, announces count changes -->
+<div id="sr-announce" role="status" aria-live="polite" aria-atomic="true"
+     style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"></div>
+
+
+
+
+<!-- ══ HELP MODAL ══ -->
+<div id="help-modal" class="backdrop" style="display:none" role="dialog" aria-modal="true" aria-labelledby="hm-title">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2 id="hm-title" class="text-xl" style="font-family:Cochin,Georgia,'Times New Roman',serif; color:var(--text);">You Are Not Alone</h2>
+      <button class="modal-close" id="close-help" aria-label="Close">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M12 1L1 12M1 1L12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="scroll overflow-y-auto p-5 space-y-3" style="max-height: calc(82vh - 70px);">
+      <p class="text-sm leading-relaxed mb-1" style="font-family:Cochin,Georgia,'Times New Roman',serif; font-style:italic; color:var(--text-2);">Reaching out is a sign of strength. These resources are free, confidential, and available 24/7.</p>
+      <div id="helplines" class="space-y-2"></div>
+      <p class="text-xs text-center mt-4 px-4 py-3 rounded-xl" style="background:var(--accent-muted); color:var(--text-2);">If you are in immediate danger, call <strong>911</strong> or your local emergency services.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AUDIO CHAT FAB ══ -->
+<button class="chat-fab" id="chat-fab" aria-label="Open voice journal" aria-expanded="false" aria-controls="chat-panel">
+  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+    <line x1="12" y1="19" x2="12" y2="22"/>
+  </svg>
+</button>
+
+<!-- ══ AUDIO CHAT PANEL ══ -->
+<div id="chat-panel" role="dialog" aria-modal="true" aria-labelledby="chat-panel-title">
+
+  <div class="chat-header">
+    <div>
+      <h2 id="chat-panel-title" class="chat-title">Talk it out</h2>
+      <p class="chat-sub">Speak or type — your words are safe here</p>
+    </div>
+    <button class="modal-close" id="chat-close" aria-label="Close voice journal">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true"><path d="M12 1L1 12M1 1L12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <!-- Message thread -->
+  <div class="chat-messages" id="chat-messages"
+       role="log" aria-live="polite" aria-label="Conversation"></div>
+
+  <!-- Recording indicator (hidden until mic active) -->
+  <div class="chat-rec-bar" id="chat-rec-bar" style="display:none" aria-live="assertive" aria-atomic="true">
+    <span class="rec-dot" aria-hidden="true"></span>
+    <span id="chat-rec-label">Listening…</span>
+  </div>
+
+  <!-- Input row -->
+  <div class="chat-input-area">
+    <div class="chat-input-row">
+      <textarea id="chat-ta" rows="1" maxlength="500"
+        placeholder="What's on your mind…"
+        aria-label="Your message"
+        aria-describedby="chat-panel-title"></textarea>
+      <button class="chat-mic-btn" id="chat-mic-btn"
+        aria-label="Start voice input"
+        title="Hold to speak">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2a3 3 0 0 1 3 3v7a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="22"/>
+        </svg>
+      </button>
+      <button class="chat-send-btn" id="chat-send-btn" disabled aria-label="Send message">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m22 2-7 20-4-9-9-4 20-7z"/>
+          <path d="M22 2 11 13"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NOTE EXPAND MODAL ══ -->
+<div id="note-expand-modal" role="dialog" aria-modal="true" aria-label="Note detail">
+  <div class="note-expand-card">
+    <button class="note-expand-close" id="note-expand-close" aria-label="Close">✕</button>
+
+    <!-- Pin -->
+    <div class="note-expand-pin" aria-hidden="true">
+      <img src="assets/pin-front.svg" width="56" height="54" alt="">
+    </div>
+
+    <!-- Ruled paper -->
+    <div class="note-expand-paper">
+      <div class="note-expand-text-area">
+        <p class="note-expand-text" id="note-expand-text"></p>
+        <p class="note-expand-meta" id="note-expand-meta"></p>
+      </div>
+    </div>
+
+    <button class="note-expand-letgo" id="note-expand-letgo">✦ Let it go</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+//  Constants
+// ═══════════════════════════════════
+const AFFIRMATIONS = [
+  "Your struggles do not define you. Take it one day at a time.",
+  "You are worthy of peace and healing, always.",
+  "Being gentle with yourself is an act of courage.",
+  "Every small step forward is still progress. Be proud.",
+  "You don't have to carry everything alone.",
+  "Your feelings are valid. Your pain is real. You matter.",
+  "Rest is not giving up. Rest is how you keep going.",
+  "Today, you are enough. You have always been enough.",
+  "Healing is not linear, and that's perfectly okay.",
+  "The bravest thing you can do is ask for help.",
+];
+
+const HELPLINES = [
+  { name: "988 Suicide & Crisis Lifeline", detail: "Call or text 988 (US)", href: "tel:988", emoji: "🇺🇸" },
+  { name: "Crisis Text Line", detail: "Text HOME to 741741", href: "sms:741741?body=HOME", emoji: "💬" },
+  { name: "NAMI Helpline", detail: "1-800-950-6264 · Mon–Fri 10am–10pm ET", href: "tel:18009506264", emoji: "🧠" },
+  { name: "SAMHSA National Helpline", detail: "1-800-662-4357 · Free, confidential, 24/7", href: "tel:18006624357", emoji: "🌿" },
+  { name: "International Crisis Centers", detail: "Find local resources worldwide", href: "https://www.iasp.info/resources/Crisis_Centres/", emoji: "🌍" },
+];
+
+const NOTE_PALETTES = [
+  { bg: "oklch(87% 0.042 308)", dot: "oklch(62% 0.060 308)" }, // lavender
+  { bg: "oklch(87% 0.040 155)", dot: "oklch(58% 0.055 155)" }, // sage
+  { bg: "oklch(89% 0.032 83)",  dot: "oklch(62% 0.040 83)"  }, // warm
+  { bg: "oklch(88% 0.042 270)", dot: "oklch(60% 0.058 270)" }, // periwinkle
+  { bg: "oklch(88% 0.038 110)", dot: "oklch(60% 0.048 110)" }, // yellow-green
+  { bg: "oklch(87% 0.044 340)", dot: "oklch(60% 0.058 340)" }, // blush
+];
+
+// Community card color palettes
+// Community palettes — warm + lavender-adjacent tones (PDD v3 community accent #A394B0)
+const COMMUNITY_PALETTES = [
+  { bg: "oklch(93% 0.022 308)", border: "oklch(82% 0.040 308)", shadow: "oklch(60% 0.052 308 / 0.14)" }, // lavender
+  { bg: "oklch(93% 0.020 155)", border: "oklch(80% 0.038 155)", shadow: "oklch(55% 0.040 155 / 0.13)" }, // sage
+  { bg: "oklch(94% 0.016 83)",  border: "oklch(85% 0.024 83)",  shadow: "oklch(55% 0.020 83  / 0.12)" }, // warm cream
+  { bg: "oklch(93% 0.022 270)", border: "oklch(82% 0.038 270)", shadow: "oklch(58% 0.048 270 / 0.14)" }, // periwinkle
+  { bg: "oklch(94% 0.018 110)", border: "oklch(83% 0.030 110)", shadow: "oklch(56% 0.032 110 / 0.12)" }, // warm yellow-green
+  { bg: "oklch(93% 0.024 340)", border: "oklch(82% 0.042 340)", shadow: "oklch(58% 0.050 340 / 0.14)" }, // blush rose
+];
+
+// ═══════════════════════════════════
+//  Storage helpers
+// ═══════════════════════════════════
+const load        = () => { try { return JSON.parse(localStorage.getItem('jot_v2')        || '[]'); } catch { return []; } };
+const loadComm    = () => { try { return JSON.parse(localStorage.getItem('jot_community') || 'null'); } catch { return null; } };
+const loadReacted = () => { try { return new Set(JSON.parse(localStorage.getItem('jot_reacted') || '[]')); } catch { return new Set(); } };
+const save        = (arr) => localStorage.setItem('jot_v2', JSON.stringify(arr));
+const saveComm    = (arr) => { localStorage.setItem('jot_community', JSON.stringify(arr)); broadcastCommunity(arr); };
+const saveReacted = (set) => localStorage.setItem('jot_reacted', JSON.stringify([...set]));
+
+// ═══════════════════════════════════
+//  State
+// ═══════════════════════════════════
+let notes          = load();
+let communityNotes = loadComm();
+let myReactions    = loadReacted();
+let undoPending    = null;
+
+// ═══════════════════════════════════
+//  Seed community if first visit
+// ═══════════════════════════════════
+function ago(h) { return new Date(Date.now() - h * 3600000).toISOString(); }
+
+if (!communityNotes) {
+  communityNotes = [
+    { id: 9001, text: "Some days the goal is just to make it to the next one. And that's enough.", timestamp: ago(0.4),  reactions: 19 },
+    { id: 9002, text: "Told a friend how I was really doing today. It was scary but I'm glad I did.", timestamp: ago(1.8),  reactions: 12 },
+    { id: 9003, text: "Still fighting. Still here. That counts for something.", timestamp: ago(5),    reactions: 24 },
+    { id: 9004, text: "I cried in my car today and that's okay. It needed to come out.", timestamp: ago(11),   reactions: 15 },
+    { id: 9005, text: "Feeling overwhelmed by everything on my plate, but taking it one hour at a time.", timestamp: ago(18),   reactions: 9 },
+    { id: 9006, text: "I'm allowed to rest. I'm allowed to take up space. I'm allowed to be a work in progress.", timestamp: ago(30),   reactions: 31 },
+    { id: 9007, text: "Progress isn't always visible. Sometimes healing happens in the quiet.", timestamp: ago(48),   reactions: 22 },
+    { id: 9008, text: "I don't have to have it all figured out right now.", timestamp: ago(72),   reactions: 17 },
+  ];
+  saveComm(communityNotes);
+}
+
+// ═══════════════════════════════════
+//  BroadcastChannel for cross-tab sync
+// ═══════════════════════════════════
+let bc;
+try {
+  bc = new BroadcastChannel('jot-community');
+  bc.onmessage = (e) => {
+    if (e.data.type !== 'community_update') return;
+    communityNotes = e.data.notes;
+    myReactions    = new Set(e.data.reactions || []);
+    renderCommunityGrid();
+    renderCommunityModalFeed();
+    updateCommunityStats();
+  };
+} catch (_) { /* unsupported */ }
+
+function broadcastCommunity(arr) {
+  try { bc && bc.postMessage({ type: 'community_update', notes: arr, reactions: [...myReactions] }); } catch (_) {}
+}
+
+
+// Particles and affirmation bar removed (landing page redesign)
+
+// ═══════════════════════════════════
+//  Helplines
+// ═══════════════════════════════════
+const hlContainer = document.getElementById('helplines');
+HELPLINES.forEach(h => {
+  const a = document.createElement('a');
+  a.href = h.href; a.target = h.href.startsWith('http') ? '_blank' : '_self'; a.rel = 'noopener noreferrer'; a.className = 'helpline-card';
+  a.innerHTML = `<span class="text-2xl" aria-hidden="true" style="line-height:1">${h.emoji}</span><div class="flex-1 min-w-0"><p class="text-sm font-semibold" style="color:var(--text)">${h.name}</p><p class="text-xs mt-0.5" style="color:var(--text-2)">${h.detail}</p></div><svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true" style="flex-shrink:0;margin-top:3px;color:var(--text-3)"><path d="M2.5 6.5h8M7.5 3.5l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  hlContainer.appendChild(a);
+});
+
+// ═══════════════════════════════════
+//  Jar rendering
+// ═══════════════════════════════════
+function renderJar() {
+  const n = notes.length;
+  document.getElementById('jar-badge').textContent = n;
+  document.getElementById('jar-body').setAttribute('aria-label',
+    communityNotes?.length
+      ? `Reach into the community jar — ${communityNotes.length} thought${communityNotes.length !== 1 ? 's' : ''} inside`
+      : 'Reach into the community jar');
+  document.getElementById('jar-fill').style.setProperty('--fill', (Math.min(n * 5.5, 68) / 100).toFixed(4));
+  document.getElementById('jar-body').classList.toggle('has-notes', n > 0);
+  const dots = document.getElementById('jar-dots');
+  dots.innerHTML = '';
+  const vis = Math.min(n, 26);
+  for (let i = 0; i < vis; i++) {
+    const d = document.createElement('div'); d.className = 'note-dot';
+    const p = NOTE_PALETTES[i % NOTE_PALETTES.length];
+    d.style.cssText = `background:${p.dot};animation-duration:${3.2+(i%4)*0.7}s;animation-delay:${(i*0.28)%3.5}s;`;
+    dots.appendChild(d);
+  }
+}
+
+// ── Jar/community UI — guarded (elements removed) ──────────────────
+if (document.getElementById('ta') || document.getElementById('jar-body')) {
+// ═══════════════════════════════════
+//  Textarea
+// ═══════════════════════════════════
+const ta      = document.getElementById('ta');
+const charHint = document.getElementById('char-hint');
+const dropBtn  = document.getElementById('drop-btn');
+
+ta.addEventListener('input', () => {
+  const l = ta.value.length;
+  charHint.textContent = `${l} / 280`;
+  charHint.classList.toggle('char-warn', l > 250);
+  dropBtn.disabled = l === 0;
+});
+
+// ═══════════════════════════════════
+//  Post-drop confirm
+// ═══════════════════════════════════
+function showDropConfirm() {
+  const el = document.getElementById('drop-confirm');
+  el.textContent = 'Safely held.'; el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 2600);
+  // Announce count update to screen readers via the dedicated live region
+  const n = notes.length;
+  const announce = document.getElementById('sr-announce');
+  announce.textContent = '';
+  requestAnimationFrame(() => {
+    announce.textContent = `Thought added. Jar now holds ${n} thought${n !== 1 ? 's' : ''}.`;
+  });
+}
+
+// ═══════════════════════════════════
+//  Drop animation — origami fold → flight
+// ═══════════════════════════════════
+function dropAnimation(callback) {
+  const taRect  = ta.getBoundingClientRect();
+  const jarRect = document.getElementById('jar-body').getBoundingClientRect();
+  const startX = taRect.left + taRect.width / 2 - 22;
+  const startY = taRect.top  + taRect.height / 2 - 19;
+  const endX   = jarRect.left + jarRect.width / 2;
+  const endY   = jarRect.top  + jarRect.height / 2;
+  const midDx  = (startX + endX) / 2 - 18 - startX;
+  const midDy  = (startY + endY) / 2 - 50 - startY;
+  const endDx  = endX - startX;
+  const endDy  = endY - startY;
+  const pal    = NOTE_PALETTES[notes.length % NOTE_PALETTES.length];
+  const flier  = document.createElement('div');
+  flier.className = 'note-flier';
+  flier.style.cssText = `background:${pal.bg};width:44px;height:38px;top:${startY}px;left:${startX}px;`;
+  document.body.appendChild(flier);
+
+  // Phase 1 — origami fold (multi-stage natural paper fold)
+  const skipMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const foldDuration = skipMotion ? 0 : 720;
+  if (!skipMotion) flier.classList.add('folding');
+
+  setTimeout(() => {
+    flier.classList.remove('folding');
+    // Phase 2 — paper-flight arc to jar
+    flier.animate([
+      { transform: 'translate(0, 0) scale(1) rotate(0deg)',                                   opacity: 1 },
+      { transform: `translate(${midDx}px, ${midDy}px) scale(0.72) rotate(-11deg)`,            opacity: 1 },
+      { transform: `translate(${endDx}px, ${endDy}px) scale(0.12) rotate(18deg)`,             opacity: 0 },
+    ], { duration: 760, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' });
+    setTimeout(() => { flier.remove(); callback(); }, 740);
+  }, foldDuration);
+}
+
+function addRipple() {
+  const body = document.getElementById('jar-body');
+  const r = document.createElement('div'); r.className = 'ripple';
+  r.style.cssText = 'width:70px;height:70px;top:50%;left:50%;margin:-35px 0 0 -35px;';
+  body.appendChild(r); setTimeout(() => r.remove(), 560);
+}
+
+// ═══════════════════════════════════
+//  Drop action
+// ═══════════════════════════════════
+function doDropNote() {
+  const text = ta.value.trim(); if (!text) return;
+  const handle = (document.getElementById('handle-input')?.value || '').trim();
+  dropBtn.disabled = true;
+  dropAnimation(() => {
+    notes.push({ id: Date.now(), text, handle, date: new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }), reflected: false, shared: false, palIdx: notes.length % NOTE_PALETTES.length });
+    save(notes); renderJar(); addRipple(); showDropConfirm();
+    ta.value = ''; charHint.textContent = '0 / 280'; charHint.classList.remove('char-warn'); dropBtn.disabled = true;
+  });
+}
+
+dropBtn.addEventListener('click', doDropNote);
+ta.addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); doDropNote(); } });
+
+// ═══════════════════════════════════
+//  Personal jar modal
+// ═══════════════════════════════════
+function esc(s) { const d = document.createElement('div'); d.appendChild(document.createTextNode(s)); return d.innerHTML; }
+
+function renderNotesList() {
+  const list = document.getElementById('notes-list'); list.innerHTML = '';
+  if (!notes.length) {
+    list.innerHTML = `<div class="py-10 text-center"><p class="text-4xl mb-3" aria-hidden="true">🫙</p><p class="text-sm font-medium" style="color:var(--text-2)">Your jar is empty.</p><p class="text-xs mt-1" style="color:var(--text-3)">Close this and write a thought above.</p></div>`;
+    return;
+  }
+  [...notes].reverse().forEach(note => {
+    const card = document.createElement('div');
+    card.className = `note-card${note.reflected ? ' reflected' : ''}`;
+    card.id = `nc-${note.id}`;
+    card.innerHTML = `
+      <p class="note-text mb-3" style="white-space:pre-wrap">${esc(note.text)}</p>
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <time class="text-xs" style="color:var(--text-3)">${note.date}</time>
+        <div class="flex gap-2 flex-wrap">
+          <button class="note-action ${note.reflected ? 'reflected' : 'reflect'}" onclick="toggleReflect(${note.id})"
+            title="${note.reflected ? 'Mark as not yet reflected' : 'Acknowledge you have sat with this thought'}"
+          >${note.reflected ? '✓ Reflected' : '🌱 Reflect'}</button>
+          <button class="note-action ${note.shared ? 'shared-note' : 'share-note'}" onclick="${note.shared ? '' : `shareNote(${note.id})`}"
+            ${note.shared ? 'disabled aria-label="Already shared"' : `aria-label="Share this thought to the community"`}
+            title="${note.shared ? 'Already shared to community' : 'Share anonymously to the community'}"
+          >${note.shared ? '✓ Shared' : '↗ Share'}</button>
+          <button class="note-action release" onclick="releaseNote(${note.id})" title="Release and let go of this thought" aria-label="Let go of this thought">🕊 Let it Go</button>
+        </div>
+      </div>`;
+    list.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════
+//  Focus trap utility
+// ═══════════════════════════════════
+const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function makeTrapHandler(modal, closeFn) {
+  return function(e) {
+    if (e.key === 'Escape') { e.preventDefault(); closeFn(); return; }
+    if (e.key !== 'Tab') return;
+    const nodes = Array.from(modal.querySelectorAll(FOCUSABLE));
+    if (!nodes.length) return;
+    const first = nodes[0], last = nodes[nodes.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+    }
+  };
+}
+
+const jarTrap       = makeTrapHandler(document.getElementById('jar-modal'),       () => closeJarModal());
+const communityTrap = makeTrapHandler(document.getElementById('community-modal'), () => closeCommunityModal());
+const helpTrap      = makeTrapHandler(document.getElementById('help-modal'),      () => closeHelp());
+
+// ═══════════════════════════════════
+//  Personal jar modal
+// ═══════════════════════════════════
+function openJarModal() {
+  renderNotesList();
+  const modal = document.getElementById('jar-modal');
+  modal.style.display = 'flex';
+  modal.addEventListener('keydown', jarTrap);
+  document.getElementById('close-jar').focus();
+}
+function closeJarModal() {
+  if (undoPending) commitRelease();
+  const modal = document.getElementById('jar-modal');
+  modal.style.display = 'none';
+  modal.removeEventListener('keydown', jarTrap);
+  document.getElementById('jar-body').focus();
+}
+
+document.getElementById('jar-body').addEventListener('click', reachIntoJar);
+document.getElementById('open-btn').addEventListener('click', openJarModal);
+document.getElementById('jar-body').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); reachIntoJar(); } });
+document.getElementById('close-jar').addEventListener('click', closeJarModal);
+document.getElementById('jar-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeJarModal(); });
+
+// ═══════════════════════════════════
+//  Jar hover jostle — PRD §5.3
+// ═══════════════════════════════════
+let jostleCooldown = false;
+document.getElementById('jar-body').addEventListener('mouseenter', () => {
+  if (jostleCooldown) return;
+  jostleCooldown = true;
+  setTimeout(() => { jostleCooldown = false; }, 900);
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const dots = document.querySelectorAll('#jar-dots .note-dot');
+  if (!dots.length) return;
+  dots.forEach((dot, i) => {
+    const jx = (Math.random() - 0.5) * 14;
+    const jy = (Math.random() - 0.5) * 10;
+    const jr = (Math.random() - 0.5) * 22;
+    dot.style.setProperty('--jx', jx + 'px');
+    dot.style.setProperty('--jy', jy + 'px');
+    dot.style.setProperty('--jr', jr + 'deg');
+    setTimeout(() => {
+      dot.classList.add('jostling');
+      dot.addEventListener('animationend', () => dot.classList.remove('jostling'), { once: true });
+    }, i * 28);
+  });
+});
+
+// ═══════════════════════════════════
+//  Reach into jar — PRD §5.3
+// ═══════════════════════════════════
+let currentPullId = null;
+const pullOverlay = document.getElementById('pull-overlay');
+const pullTrap = makeTrapHandler(pullOverlay, closePullCard);
+
+function reachIntoJar() {
+  if (!communityNotes.length) { openJarModal(); return; } // fallback to personal jar if no community notes
+  const idx = Math.floor(Math.random() * communityNotes.length);
+  const note = communityNotes[idx];
+  currentPullId = note.id;
+  document.getElementById('pull-text').textContent = note.text;
+  document.getElementById('pull-handle').textContent = note.handle ? '— ' + note.handle : '';
+  // Reset hold button state
+  const holdBtn = document.getElementById('pull-hold-btn');
+  const alreadyHeld = myReactions.has(note.id);
+  holdBtn.classList.toggle('held', alreadyHeld);
+  holdBtn.setAttribute('aria-pressed', alreadyHeld);
+  holdBtn.innerHTML = `<span class="pull-heart" aria-hidden="true">${alreadyHeld ? '♥' : '♡'}</span> ${alreadyHeld ? 'Holding Space' : 'Hold Space'}`;
+  // Show overlay
+  pullOverlay.style.display = 'flex';
+  pullOverlay.addEventListener('keydown', pullTrap);
+  document.getElementById('pull-close').focus();
+}
+
+function closePullCard() {
+  pullOverlay.style.display = 'none';
+  pullOverlay.removeEventListener('keydown', pullTrap);
+  currentPullId = null;
+  document.getElementById('jar-body').focus();
+}
+
+function holdPulledNote() {
+  if (currentPullId === null) return;
+  toggleReaction(currentPullId);
+  const note = communityNotes.find(n => n.id === currentPullId);
+  if (!note) return;
+  const alreadyHeld = myReactions.has(currentPullId);
+  const holdBtn = document.getElementById('pull-hold-btn');
+  holdBtn.classList.toggle('held', alreadyHeld);
+  holdBtn.setAttribute('aria-pressed', alreadyHeld);
+  holdBtn.innerHTML = `<span class="pull-heart" aria-hidden="true">${alreadyHeld ? '♥' : '♡'}</span> ${alreadyHeld ? 'Holding Space' : 'Hold Space'}`;
+}
+
+document.getElementById('pull-close').addEventListener('click', closePullCard);
+document.getElementById('pull-hold-btn').addEventListener('click', holdPulledNote);
+document.getElementById('pull-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closePullCard(); });
+document.getElementById('reach-btn').addEventListener('click', reachIntoJar);
+
+// ═══════════════════════════════════
+//  Note actions
+// ═══════════════════════════════════
+function toggleReflect(id) {
+  const idx = notes.findIndex(n => n.id === id); if (idx < 0) return;
+  notes[idx].reflected = !notes[idx].reflected; save(notes); renderNotesList();
+}
+
+function releaseNote(id) {
+  const card = document.getElementById(`nc-${id}`); if (!card) return;
+  if (undoPending && undoPending.id !== id) commitRelease();
+  card.classList.add('releasing');
+  setTimeout(() => {
+    const idx = notes.findIndex(n => n.id === id); if (idx < 0) return;
+    const [note] = notes.splice(idx, 1); save(notes); renderJar(); renderNotesList();
+    undoPending = { id, note, insertIdx: idx };
+    showUndoToast(); undoPending.timer = setTimeout(commitRelease, 5000);
+  }, 520);
+}
+
+function commitRelease() { if (!undoPending) return; clearTimeout(undoPending.timer); undoPending = null; hideUndoToast(); }
+function undoRelease() {
+  if (!undoPending) return; clearTimeout(undoPending.timer);
+  const { note, insertIdx } = undoPending; undoPending = null; hideUndoToast();
+  notes.splice(Math.min(insertIdx, notes.length), 0, note); save(notes); renderJar(); renderNotesList();
+}
+
+function showUndoToast() { const t = document.getElementById('undo-toast'); t.style.display = 'flex'; requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('visible'))); }
+function hideUndoToast() { const t = document.getElementById('undo-toast'); t.classList.remove('visible'); setTimeout(() => { t.style.display = 'none'; }, 300); }
+
+document.getElementById('undo-btn').addEventListener('click', undoRelease);
+
+// ═══════════════════════════════════
+//  Share note to community
+// ═══════════════════════════════════
+function shareNote(id) {
+  const idx = notes.findIndex(n => n.id === id); if (idx < 0) return;
+  const note = notes[idx];
+
+  // Add to community feed (include author handle if provided)
+  const entry = { id: Date.now(), text: note.text, handle: note.handle || '', timestamp: new Date().toISOString(), reactions: 0 };
+  communityNotes.unshift(entry);
+  saveComm(communityNotes);
+
+  // Mark as shared in personal jar
+  notes[idx].shared = true; save(notes); renderNotesList();
+
+  // Update community renders
+  renderCommunityGrid(); renderCommunityModalFeed(); updateCommunityStats();
+
+  // Copy shareable URL to clipboard
+  copyShareUrl(note.text);
+}
+
+function copyShareUrl(text) {
+  try {
+    const encoded = btoa(encodeURIComponent(text));
+    const url = window.location.origin + window.location.pathname + '?share=' + encoded;
+    navigator.clipboard.writeText(url).then(() => showCopyToast('Link copied to clipboard')).catch(() => showCopyToast('Shared to community'));
+  } catch (_) { showCopyToast('Shared to community'); }
+}
+
+function showCopyToast(msg) {
+  // Reuse undo toast slot but with a different message
+  const t = document.getElementById('undo-toast');
+  const origHTML = t.innerHTML;
+  t.querySelector('span').textContent = '✓ ' + msg;
+  t.querySelector('button').style.display = 'none';
+  t.style.display = 'flex';
+  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('visible')));
+  setTimeout(() => { t.classList.remove('visible'); setTimeout(() => { t.style.display = 'none'; t.querySelector('button').style.display = ''; t.querySelector('span').textContent = 'Thought released.'; }, 300); }, 2500);
+}
+
+// ═══════════════════════════════════
+//  Community — helpers
+// ═══════════════════════════════════
+function timeAgo(iso) {
+  const m = Math.floor((Date.now() - new Date(iso)) / 60000);
+  if (m < 1)    return 'just now';
+  if (m < 60)   return m + 'm ago';
+  const h = Math.floor(m / 60);
+  if (h < 24)   return h + 'h ago';
+  const d = Math.floor(h / 24);
+  return d === 1 ? 'yesterday' : d + 'd ago';
+}
+
+function updateCommunityStats() {
+  const totalReactions = communityNotes.reduce((s, n) => s + (n.reactions || 0), 0);
+  document.getElementById('community-stats').textContent = `${communityNotes.length} thoughts · ${totalReactions} holding space`;
+}
+
+// ═══════════════════════════════════
+//  Community — grid (inline on page)
+// ═══════════════════════════════════
+function buildCommunityCard(note, isNew = false) {
+  const pal = COMMUNITY_PALETTES[note.id % COMMUNITY_PALETTES.length];
+  const reacted = myReactions.has(note.id);
+  const div = document.createElement('div');
+  div.className = `community-card appear${isNew ? ' new-entry' : ''}`;
+  div.id = `cc-${note.id}`;
+  div.style.cssText = `background:${pal.bg};border-color:${pal.border};box-shadow:0 2px 10px ${pal.shadow};`;
+  div.innerHTML = `
+    <p class="community-card-text mb-3">${esc(note.text)}</p>
+    ${note.handle ? `<p class="text-xs italic mb-3" style="color:var(--text-3); font-family:Cochin,Georgia,'Times New Roman',serif">— ${esc(note.handle)}</p>` : ''}
+    <div class="flex items-center justify-between gap-2 flex-wrap">
+      <time class="text-xs" style="font-family:Cochin,Georgia,'Times New Roman',serif; color:var(--text-3)">${timeAgo(note.timestamp)}</time>
+      <div class="flex items-center gap-2">
+        <button class="letgo-btn" onclick="localLetGo('cc-${note.id}')" aria-label="Let this thought go from your view">Let it Go</button>
+        <button class="copy-link-btn" onclick="copyShareUrl(${JSON.stringify(esc(note.text))})" title="Copy shareable link" aria-label="Copy link to this thought">
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none" style="display:inline;vertical-align:middle;margin-right:3px" aria-hidden="true"><path d="M5 9L9 5M8 3.5h2.5v2.5M9 8.5v2.5h-6v-6h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Share
+        </button>
+        <button class="reaction-btn${reacted ? ' reacted' : ''}" id="rb-${note.id}" onclick="toggleReaction(${note.id})" aria-label="${reacted ? 'Remove Hold Space' : 'Hold Space for this thought'}" aria-pressed="${reacted}">
+          <span class="heart" aria-hidden="true">${reacted ? '♥' : '♡'}</span>
+          <span id="rc-${note.id}">${note.reactions}</span>
+          <span style="opacity:0.8">holding space</span>
+        </button>
+      </div>
+    </div>`;
+  return div;
+}
+
+function renderCommunityGrid() {
+  const grid = document.getElementById('community-grid');
+  grid.innerHTML = '';
+  if (!communityNotes.length) {
+    grid.innerHTML = `<div class="community-empty"><p class="text-3xl mb-2" aria-hidden="true">🌱</p><p class="text-sm" style="color:var(--text-2)">No shared thoughts yet.</p><p class="text-xs mt-1" style="color:var(--text-3)">Share a thought from your jar to start the community.</p></div>`;
+    return;
+  }
+  communityNotes.forEach((note, i) => {
+    const card = buildCommunityCard(note);
+    card.style.setProperty('--appear-delay', `${Math.min(i * 0.07, 0.42)}s`);
+    grid.appendChild(card);
+  });
+  updateCommunityStats();
+  // Re-observe newly rendered cards
+  if (typeof appearObserver !== 'undefined') {
+    grid.querySelectorAll('.appear').forEach(el => appearObserver.observe(el));
+  }
+}
+
+// ═══════════════════════════════════
+//  Community — modal (full list)
+// ═══════════════════════════════════
+function renderCommunityModalFeed() {
+  const feed = document.getElementById('community-modal-feed'); feed.innerHTML = '';
+  if (!communityNotes.length) {
+    feed.innerHTML = `<div class="py-10 text-center"><p class="text-3xl mb-2" aria-hidden="true">🌱</p><p class="text-sm font-medium" style="color:var(--text-2)">No shared thoughts yet.</p></div>`;
+    return;
+  }
+  communityNotes.forEach(note => {
+    const pal = COMMUNITY_PALETTES[note.id % COMMUNITY_PALETTES.length];
+    const reacted = myReactions.has(note.id);
+    const div = document.createElement('div');
+    div.className = 'community-card'; div.id = `ccm-${note.id}`;
+    div.style.cssText = `background:${pal.bg};border-color:${pal.border};box-shadow:0 2px 10px ${pal.shadow};`;
+    div.innerHTML = `
+      <p class="community-card-text mb-3">${esc(note.text)}</p>
+      ${note.handle ? `<p class="text-xs italic mb-3" style="color:var(--text-3); font-family:Cochin,Georgia,'Times New Roman',serif">— ${esc(note.handle)}</p>` : ''}
+      <div class="flex items-center justify-between gap-2 flex-wrap">
+        <time class="text-xs" style="font-family:Cochin,Georgia,'Times New Roman',serif; color:var(--text-3)">${timeAgo(note.timestamp)}</time>
+        <div class="flex items-center gap-2">
+          <button class="letgo-btn" onclick="localLetGo('ccm-${note.id}')" aria-label="Let this thought go from your view">Let it Go</button>
+          <button class="copy-link-btn" onclick="copyShareUrl(${JSON.stringify(esc(note.text))})" aria-label="Copy link">
+            <svg width="11" height="11" viewBox="0 0 14 14" fill="none" style="display:inline;vertical-align:middle;margin-right:3px" aria-hidden="true"><path d="M5 9L9 5M8 3.5h2.5v2.5M9 8.5v2.5h-6v-6h2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Share
+          </button>
+          <button class="reaction-btn${reacted ? ' reacted' : ''}" id="rbm-${note.id}" onclick="toggleReaction(${note.id})" aria-label="${reacted ? 'Remove Hold Space' : 'Hold Space for this thought'}" aria-pressed="${reacted}">
+            <span class="heart" aria-hidden="true">${reacted ? '♥' : '♡'}</span>
+            <span id="rcm-${note.id}">${note.reactions}</span>
+            <span style="opacity:0.8">holding space</span>
+          </button>
+        </div>
+      </div>`;
+    feed.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════
+//  Reactions
+// ═══════════════════════════════════
+function toggleReaction(id) {
+  const idx = communityNotes.findIndex(n => n.id === id); if (idx < 0) return;
+  const alreadyReacted = myReactions.has(id);
+  if (alreadyReacted) { myReactions.delete(id); communityNotes[idx].reactions = Math.max(0, communityNotes[idx].reactions - 1); }
+  else { myReactions.add(id); communityNotes[idx].reactions++; }
+  saveComm(communityNotes); saveReacted(myReactions);
+  const nowReacted = myReactions.has(id);
+
+  // Update buttons (page + modal)
+  ['rb', 'rbm'].forEach(prefix => {
+    const btn = document.getElementById(`${prefix}-${id}`);
+    if (!btn) return;
+    btn.classList.toggle('reacted', nowReacted);
+    btn.setAttribute('aria-pressed', nowReacted);
+    btn.setAttribute('aria-label', nowReacted ? 'Remove Hold Space' : 'Hold Space for this thought');
+    btn.querySelector('.heart').textContent = nowReacted ? '♥' : '♡';
+  });
+  ['rc', 'rcm'].forEach(prefix => {
+    const el = document.getElementById(`${prefix}-${id}`);
+    if (el) el.textContent = communityNotes[idx].reactions;
+  });
+
+  // Pulse lavender aura on the card (FR-03)
+  ['cc', 'ccm'].forEach(prefix => {
+    const card = document.getElementById(`${prefix}-${id}`);
+    if (card) card.classList.toggle('held', nowReacted);
+  });
+
+  updateCommunityStats();
+}
+
+// Local "Let it Go" — removes card from this browser view only, never modifies global data (FR-03)
+function localLetGo(cardId) {
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  card.classList.add('local-releasing');
+  setTimeout(() => card.remove(), 520);
+}
+
+// ═══════════════════════════════════
+//  Community modal open/close
+// ═══════════════════════════════════
+function openCommunityModal() {
+  renderCommunityModalFeed();
+  const modal = document.getElementById('community-modal');
+  modal.style.display = 'flex';
+  modal.addEventListener('keydown', communityTrap);
+  document.getElementById('close-community').focus();
+}
+function closeCommunityModal() {
+  const modal = document.getElementById('community-modal');
+  modal.style.display = 'none';
+  modal.removeEventListener('keydown', communityTrap);
+  document.getElementById('community-btn').focus();
+}
+
+document.getElementById('community-btn').addEventListener('click', openCommunityModal);
+document.getElementById('close-community').addEventListener('click', closeCommunityModal);
+document.getElementById('community-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeCommunityModal(); });
+
+// ═══════════════════════════════════
+//  Help modal
+// ═══════════════════════════════════
+function openHelp() {
+  const modal = document.getElementById('help-modal');
+  modal.style.display = 'flex';
+  modal.addEventListener('keydown', helpTrap);
+  document.getElementById('close-help').focus();
+}
+function closeHelp() {
+  const modal = document.getElementById('help-modal');
+  modal.style.display = 'none';
+  modal.removeEventListener('keydown', helpTrap);
+  document.getElementById('help-btn').focus();
+}
+document.getElementById('help-btn').addEventListener('click', openHelp);
+document.getElementById('close-help').addEventListener('click', closeHelp);
+document.getElementById('help-modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeHelp(); });
+
+// Escape is handled per-modal by each trap handler (added/removed with the modal)
+
+// ═══════════════════════════════════
+//  URL-based shared note (??share=)
+// ═══════════════════════════════════
+(function handleSharedNote() {
+  try {
+    const param = new URLSearchParams(window.location.search).get('share');
+    if (!param) return;
+    const text = decodeURIComponent(atob(param));
+    if (!text) return;
+
+    const banner = document.getElementById('share-banner');
+    document.getElementById('share-banner-text').textContent = text;
+    banner.style.display = 'block';
+
+    document.getElementById('share-banner-add').addEventListener('click', () => {
+      notes.push({ id: Date.now(), text, date: new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }), reflected: false, shared: false, palIdx: notes.length % NOTE_PALETTES.length });
+      save(notes); renderJar(); banner.style.display = 'none';
+      // Clean URL
+      history.replaceState({}, '', window.location.pathname);
+    });
+
+    document.getElementById('share-banner-dismiss').addEventListener('click', () => {
+      banner.style.display = 'none';
+      history.replaceState({}, '', window.location.pathname);
+    });
+  } catch (_) { /* malformed share param */ }
+})();
+
+// ═══════════════════════════════════
+//  Audio Chat — drop thought from chat into jar
+// ═══════════════════════════════════
+function dropChatThought(btn, text) {
+  if (!text?.trim()) return;
+  const note = { id: Date.now(), text: text.trim(), handle: '', date: new Date().toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }), reflected: false, shared: false };
+  notes.push(note);
+  save(notes);
+  renderJar();
+  btn.textContent = '✓ In your jar';
+  btn.disabled = true;
+  // Brief sr announcement
+  const ann = document.getElementById('sr-announce');
+  if (ann) { ann.textContent = ''; requestAnimationFrame(() => { ann.textContent = 'Thought added to jar.'; }); }
+}
+
+// ═══════════════════════════════════
+//  Audio Chat — panel & voice input
+// ═══════════════════════════════════
+(function initAudioChat() {
+  const fab      = document.getElementById('chat-fab');
+  const panel    = document.getElementById('chat-panel');
+  const closeBtn = document.getElementById('chat-close');
+  const messages = document.getElementById('chat-messages');
+  const ta       = document.getElementById('chat-ta');
+  const micBtn   = document.getElementById('chat-mic-btn');
+  const sendBtn  = document.getElementById('chat-send-btn');
+  const recBar   = document.getElementById('chat-rec-bar');
+  const recLabel = document.getElementById('chat-rec-label');
+  if (!fab || !panel) return;
+
+  // ── Empathetic reflection engine ─────────────────
+  const RULES = [
+    { re: /anxi|panic|worry|worri|nervous|dread|scared|fear/i,
+      r: ["Anxiety has a way of making everything feel urgent. You're safe right now, in this moment.",
+          "That kind of worry is exhausting to carry. What would help you feel even a little lighter?"] },
+    { re: /sad|depress|hopeless|empty|numb|hollow|meaningless/i,
+      r: ["Sadness that deep deserves to be heard, not rushed past. I'm here.",
+          "You don't have to explain or justify how you feel. It's real, and it matters."] },
+    { re: /alone|lonely|isolat|no one|nobody|invisible/i,
+      r: ["Loneliness can feel invisible from the outside. But you reached out — that matters.",
+          "You wrote this, which means part of you wanted to be heard. I hear you."] },
+    { re: /tired|exhaust|burnout|burn out|can.t keep|no energy/i,
+      r: ["Being this tired isn't weakness. It's what happens when you've been strong for too long.",
+          "Rest isn't giving up. Sometimes it's the bravest thing you can do."] },
+    { re: /angry|anger|furious|frustrated|rage|resentful/i,
+      r: ["Anger often protects something tender underneath. What does it feel like it's guarding?",
+          "That frustration makes sense. You're allowed to feel it fully."] },
+    { re: /overwhelm|too much|can.t cope|falling apart|breaking/i,
+      r: ["When everything feels like too much, the only move is one small step. What's the smallest one?",
+          "You're not broken. You're overloaded. There's a real difference."] },
+    { re: /\b(die|death|dying|suicid|end it|give up|not worth|not here)\b/i,
+      r: ["What you're feeling sounds incredibly painful. You don't have to carry this alone — the ? button connects you to real support right now."] },
+  ];
+  const FALLBACK = [
+    "Thank you for sharing that. What you're feeling is completely valid.",
+    "It takes courage to put words to this. How long have you been carrying it?",
+    "You're not alone in this, even when it feels that way.",
+    "Sometimes naming something takes away a little of its weight.",
+    "That sounds really real. What would you want someone to say to you right now?",
+    "You showed up for yourself today by writing this. That matters.",
+    "I hear you. Keep going if there's more.",
+  ];
+  function getReflection(text) {
+    for (const rule of RULES) {
+      if (rule.re.test(text)) return rule.r[Math.floor(Math.random() * rule.r.length)];
+    }
+    return FALLBACK[Math.floor(Math.random() * FALLBACK.length)];
+  }
+
+  // ── SpeechRecognition setup ───────────────────────
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let recognition = null;
+  let isRecording = false;
+  if (SR) {
+    recognition = new SR();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+  } else {
+    micBtn.disabled = true;
+    micBtn.classList.add('no-speech');
+    micBtn.title = 'Voice input requires Chrome or Safari';
+  }
+
+  // ── Auto-resize textarea ──────────────────────────
+  function resizeTa() {
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+    sendBtn.disabled = !ta.value.trim();
+  }
+  ta.addEventListener('input', resizeTa);
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+
+  // ── Messages ─────────────────────────────────────
+  let hasMessages = false;
+  function addMsg(text, type) {
+    const d = document.createElement('div');
+    d.className = `chat-msg ${type}`;
+    if (type === 'user') {
+      d.innerHTML = `<p class="msg-text">${esc(text)}</p>
+        <div class="msg-actions">
+          <button class="msg-drop-btn"
+            onclick="dropChatThought(this, ${JSON.stringify(text)})"
+            aria-label="Drop this thought into your jar">✦ Drop into Jar</button>
+        </div>`;
+    } else {
+      d.textContent = text;
+    }
+    messages.appendChild(d);
+    messages.scrollTop = messages.scrollHeight;
+    hasMessages = true;
+  }
+
+  function sendMessage() {
+    const text = ta.value.trim();
+    if (!text) return;
+    addMsg(text, 'user');
+    ta.value = ''; resizeTa();
+    // Reflection with a short, natural delay
+    setTimeout(() => addMsg(getReflection(text), 'echo'), 800 + Math.random() * 500);
+  }
+  sendBtn.addEventListener('click', sendMessage);
+
+  // ── Voice recording ───────────────────────────────
+  function startRecording() {
+    if (!recognition || isRecording) return;
+    isRecording = true;
+    micBtn.classList.add('recording');
+    micBtn.setAttribute('aria-label', 'Stop recording');
+    recBar.style.display = 'flex';
+    recLabel.textContent = 'Listening…';
+    recognition.start();
+
+    recognition.onresult = (e) => {
+      let final = '', interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        (e.results[i].isFinal ? (final += e.results[i][0].transcript)
+                              : (interim += e.results[i][0].transcript));
+      }
+      ta.value = (final || interim).trim();
+      recLabel.textContent = interim ? 'Hearing you…' : 'Listening…';
+      resizeTa();
+    };
+    recognition.onerror = (e) => {
+      recLabel.textContent = e.error === 'not-allowed' ? 'Mic access denied' : 'Could not hear you';
+      setTimeout(stopRecording, 1400);
+    };
+    recognition.onend = stopRecording;
+  }
+
+  function stopRecording() {
+    if (!isRecording) return;
+    isRecording = false;
+    micBtn.classList.remove('recording');
+    micBtn.setAttribute('aria-label', 'Start voice input');
+    recBar.style.display = 'none';
+    try { recognition?.stop(); } catch (_) {}
+    ta.focus(); resizeTa();
+  }
+
+  micBtn.addEventListener('click', () => isRecording ? stopRecording() : startRecording());
+
+  // ── Panel open / close ────────────────────────────
+  let panelOpen = false;
+  let chatTrap = null;
+
+  function openChat() {
+    panelOpen = true;
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden', 'false');
+    fab.classList.add('panel-open');
+    fab.setAttribute('aria-expanded', 'true');
+    fab.setAttribute('aria-label', 'Close voice journal');
+
+    chatTrap = makeTrapHandler(panel, closeChat);
+    panel.addEventListener('keydown', chatTrap);
+
+    if (!hasMessages) {
+      addMsg("Hi. This is a space just for you. Speak or type whatever's on your mind — nothing is too small or too heavy.", 'echo');
+    }
+    setTimeout(() => ta.focus(), 60);
+  }
+
+  function closeChat() {
+    if (!panelOpen) return;
+    panelOpen = false;
+    panel.classList.remove('open');
+    panel.setAttribute('aria-hidden', 'true');
+    fab.classList.remove('panel-open');
+    fab.setAttribute('aria-expanded', 'false');
+    fab.setAttribute('aria-label', 'Open voice journal');
+
+    if (chatTrap) { panel.removeEventListener('keydown', chatTrap); chatTrap = null; }
+    if (isRecording) stopRecording();
+    fab.focus();
+  }
+
+  fab.addEventListener('click', () => panelOpen ? closeChat() : openChat());
+  closeBtn.addEventListener('click', closeChat);
+})();
+
+// ═══════════════════════════════════
+//  Appear observer (community + scroll)
+// ═══════════════════════════════════
+const appearObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      appearObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+// Observe all community-section .appear elements on load
+document.querySelectorAll('#community-section .appear').forEach(el => appearObserver.observe(el));
+}
+
+// ═══════════════════════════════════
+//  Init
+// ═══════════════════════════════════
+// (jar and community removed — typebox-only mode)
+
+// ═══════════════════════════════════
+//  Handwriting effect
+// ═══════════════════════════════════
+// Pen nib SVG — used as the cursor when penEffect is true
+const PEN_NIB_SVG = `<svg width="18" height="22" viewBox="0 0 18 22" fill="none" aria-hidden="true">
+  <path d="M9 1 L17 9 L9 21 L1 9 Z" fill="#111" opacity="0.85"/>
+  <path d="M9 14 L9 21" stroke="#111" stroke-width="1.4" stroke-linecap="round"/>
+  <path d="M6 10 Q9 13.5 12 10" stroke="#fff" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+  <circle cx="9" cy="20" r="1.2" fill="#111"/>
+</svg>`;
+
+function handwrite(el, { delay = 0, speed = 42, penEffect = false, onDone } = {}) {
+  const skipMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const text = el.textContent;
+  el.textContent = '';
+  el.classList.add('hw-running');
+  if (penEffect) el.classList.add('hw-pen');
+
+  // Build cursor — pen nib for title, blinking bar for others
+  const cursor = document.createElement('span');
+  if (penEffect) {
+    cursor.className = 'pen-nib-cursor';
+    cursor.innerHTML = PEN_NIB_SVG;
+  } else {
+    cursor.className = 'hw-cursor';
+  }
+  el.appendChild(cursor);
+
+  if (skipMotion) {
+    el.textContent = text;
+    el.classList.remove('hw-running');
+    el.classList.add('hw-done');
+    onDone && onDone();
+    return;
+  }
+
+  let i = 0;
+  function typeNext() {
+    if (i >= text.length) {
+      cursor.classList.add('hw-fin');
+      // Remove pen cursor after lift-off animation
+      if (penEffect) setTimeout(() => cursor.remove(), 500);
+      el.classList.remove('hw-running');
+      el.classList.add('hw-done');
+      onDone && onDone();
+      return;
+    }
+    const char = document.createElement('span');
+    char.className = 'hw-char';
+    char.textContent = text[i++];
+    el.insertBefore(char, cursor);
+    // Organic jitter — slightly slower on uppercase and punctuation
+    const ch = text[i - 1];
+    const isComplex = /[A-Z0-9,.]/.test(ch);
+    const jitter = (Math.random() - 0.5) * speed * 0.45;
+    const extra = isComplex ? speed * 0.3 : 0;
+    setTimeout(typeNext, speed + jitter + extra);
+  }
+
+  setTimeout(typeNext, delay);
+}
+
+// ═══════════════════════════════════
+//  Landing 1 — init
+// ═══════════════════════════════════
+// ═══════════════════════════════════
+//  Screen switcher
+// ═══════════════════════════════════
+function showScreen(name) {
+  document.getElementById('screen-wall').style.display    = name === 'wall'    ? 'flex' : 'none';
+  document.getElementById('screen-form').style.display    = name === 'form'    ? 'flex' : 'none';
+  document.getElementById('screen-journal').style.display = name === 'journal' ? 'flex' : 'none';
+  window.scrollTo(0, 0);
+
+  if (name === 'form') {
+    // Trigger unfold + fade-in animations
+    const note  = document.querySelector('.form-deco-note');
+    const left  = document.querySelector('.form-left');
+    if (note && left) {
+      // Reset by removing class first, then re-add on next frame
+      note.classList.remove('animating');
+      left.classList.remove('animating');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          note.classList.add('animating');
+          left.classList.add('animating');
+        });
+      });
+      // Clean up after animation finishes
+      note.addEventListener('animationend', () => note.classList.remove('animating'), { once: true });
+      left.addEventListener('animationend', () => {
+        left.classList.remove('animating');
+        left.style.opacity = '';
+      }, { once: true });
+    }
+  }
+}
+
+// ═══════════════════════════════════
+//  Intro overlay sequence
+// ═══════════════════════════════════
+(function initIntro() {
+  const overlay = document.getElementById('intro-overlay');
+  if (!overlay) return;
+
+  const s1       = document.getElementById('intro-s1');
+  const s2       = document.getElementById('intro-s2');
+  const path1    = document.getElementById('intro-loop-stat');
+  const path2    = document.getElementById('intro-loop-voice');
+
+  // Measure actual path length for accurate dasharray
+  function setPathLength(path) {
+    const len = path.getTotalLength();
+    path.style.strokeDasharray  = len;
+    path.style.strokeDashoffset = len;
+  }
+
+  // Kick off the draw animation (adds .draw class which transitions dashoffset → 0)
+  function drawPath(path, duration) {
+    return new Promise(resolve => {
+      path.style.transition = `stroke-dashoffset ${duration}s cubic-bezier(0.43, 0.13, 0.23, 0.96)`;
+      path.style.strokeDashoffset = '0';
+      setTimeout(resolve, duration * 1000);
+    });
+  }
+
+  // Fade element opacity
+  function fadeTo(el, opacity, duration) {
+    return new Promise(resolve => {
+      el.style.transition = `opacity ${duration}s ease`;
+      el.style.opacity    = opacity;
+      setTimeout(resolve, duration * 1000);
+    });
+  }
+
+  // Fade in text (y offset entrance matching HandWrittenTitle motion)
+  function revealText(textEl) {
+    return new Promise(resolve => {
+      requestAnimationFrame(() => {
+        textEl.classList.add('visible');
+        setTimeout(resolve, 820); // 0.8s transition + tiny buffer
+      });
+    });
+  }
+
+  async function runSequence() {
+    // Prep both paths
+    setPathLength(path1);
+    setPathLength(path2);
+
+    // Slide 1 — text fades up (delay 0.5s from HandWrittenTitle), then pen draws
+    s1.style.opacity       = '1';
+    s1.style.pointerEvents = 'auto';
+    s2.style.opacity       = '0';
+    s2.style.pointerEvents = 'none';
+
+    // 500ms delay before text appears (matches component's delay: 0.5)
+    await new Promise(r => setTimeout(r, 500));
+    const statText = document.getElementById('intro-stat');
+    await revealText(statText);
+
+    // Short beat after text is readable, then pen starts
+    await new Promise(r => setTimeout(r, 200));
+    await drawPath(path1, 2.5); // 2.5s matching component pathLength duration
+
+    // Hold so stat lands emotionally
+    await new Promise(r => setTimeout(r, 1600));
+
+    // Cross-fade to slide 2
+    await Promise.all([
+      fadeTo(s1, 0, 0.7),
+      fadeTo(s2, 1, 0.7)
+    ]);
+    s1.style.pointerEvents = 'none';
+    s2.style.pointerEvents = 'auto';
+
+    // Slide 2 — same pattern: text first, then pen
+    await new Promise(r => setTimeout(r, 500));
+    const voiceText = document.getElementById('intro-voice');
+    await revealText(voiceText);
+
+    await new Promise(r => setTimeout(r, 200));
+    await drawPath(path2, 2.5);
+
+    // Hold slide 2
+    await new Promise(r => setTimeout(r, 1400));
+
+    // Fade out the whole overlay to reveal Wall of thoughts
+    overlay.style.transition = 'opacity 0.9s ease';
+    overlay.style.opacity    = '0';
+    await new Promise(r => setTimeout(r, 920));
+    overlay.style.display    = 'none';
+  }
+
+  runSequence();
+})();
+
+// ═══════════════════════════════════
+//  Form: Create a Sticky Note
+// ═══════════════════════════════════
+(function initForm() {
+  const ta       = document.getElementById('l1-ta');
+  const send     = document.getElementById('l1-send');
+  const write    = document.getElementById('l1-write');
+  const back     = document.getElementById('l1-back');
+  const nameIn   = document.getElementById('l1-name-input');
+  const confirm  = document.getElementById('l1-confirm');
+  const mic      = document.getElementById('l1-mic');
+  const share    = document.getElementById('l1-share');
+  const showname = document.getElementById('l1-showname');
+  const formNav  = document.getElementById('form-nav-btn');
+
+  if (!ta) return;
+
+  // _runLanding1HW no-op kept for intro compat
+  window._runLanding1HW = function() {};
+
+  function updateButtons() {
+    const has = ta.value.trim().length > 0;
+    if (write) write.disabled = !has;
+    if (send)  send.disabled  = !has;
+  }
+
+  ta.addEventListener('input', updateButtons);
+  ta.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') { e.preventDefault(); doSubmit(); }
+  });
+
+  function flyNoteToWall(destScreen) {
+    const decoNote = document.querySelector('.form-deco-svg') || document.querySelector('.form-deco-note');
+    if (!decoNote) { showScreen(destScreen); return; }
+    const srcRect = decoNote.getBoundingClientRect();
+
+    // ── Outer mover: zero-size anchor at note center ──
+    const mover = document.createElement('div');
+    mover.id = 'note-flyer-mover';
+    mover.style.left = `${srcRect.left + srcRect.width / 2}px`;
+    mover.style.top  = `${srcRect.top  + srcRect.height / 2}px`;
+
+    // ── Inner folder: the visible note ──
+    const folder = document.createElement('div');
+    folder.id = 'note-flyer-folder';
+    folder.style.cssText = `
+      left: ${-srcRect.width / 2}px;
+      top:  ${-srcRect.height / 2}px;
+      width: ${srcRect.width}px;
+      height: ${srcRect.height}px;
+    `;
+    folder.innerHTML = `
+      <img class="flyer-img" src="assets/note-sticky1.svg" width="747" height="702" alt="">
+      <img class="flyer-pin" src="assets/pin-front.svg" width="30" height="28" alt="">
+    `;
+    mover.appendChild(folder);
+    document.body.appendChild(mover);
+
+    const selector = destScreen === 'journal'
+      ? '#journal-notes-container .journal-note-wrap'
+      : '#wall-deco .wall-deco-img-wrap';
+
+    // ── Phase 1 (0–560ms): fold the note flat — multi-stage origami ──
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      // Stage 1: start folding
+      folder.style.transition = 'transform 0.28s cubic-bezier(0.55,0,1,0.45)';
+      folder.style.transform  = 'perspective(700px) rotateX(-40deg) scaleY(0.55) scale(0.72)';
+      setTimeout(() => {
+        // Stage 2: crease fully flat
+        folder.style.transition = 'transform 0.30s cubic-bezier(0.55,0,0.9,0.5)';
+        folder.style.transform  = 'perspective(700px) rotateX(-82deg) scaleY(0.08) scale(0.55)';
+      }, 280);
+    }));
+
+    // ── Phase 2 (560–1080ms): fly folded note to target ──
+    setTimeout(() => {
+      showScreen(destScreen);
+      if (destScreen === 'journal') window.renderJournalNotes?.();
+
+      const slots = document.querySelectorAll(selector);
+      if (!slots.length) { mover.remove(); return; }
+      const target = slots[Math.floor(Math.random() * Math.min(4, slots.length))];
+      const tRect  = target.getBoundingClientRect();
+      const finalScale = tRect.width / srcRect.width;
+
+      // Move the anchor to target center
+      mover.style.transition = 'left 0.52s cubic-bezier(0.25,0.46,0.45,0.94), top 0.52s cubic-bezier(0.25,0.46,0.45,0.94)';
+      mover.style.left = `${tRect.left + tRect.width / 2}px`;
+      mover.style.top  = `${tRect.top  + tRect.height / 2}px`;
+
+      // Keep folder folded + resize to landing scale during flight
+      folder.style.transition = 'transform 0.52s cubic-bezier(0.25,0.46,0.45,0.94)';
+      folder.style.transform  = `perspective(700px) rotateX(-82deg) scaleY(0.08) scale(${finalScale * 0.55})`;
+
+      // ── Phase 3 (940–1380ms): spring-unfold + pin drop ──
+      setTimeout(() => {
+        // Spring open
+        folder.style.transition = 'transform 0.44s cubic-bezier(0.34,1.56,0.64,1)';
+        folder.style.transform  = `scale(${finalScale}) rotate(3deg)`;
+
+        // Pin drops in
+        const pin = folder.querySelector('.flyer-pin');
+        if (pin) {
+          pin.style.transition = 'none';
+          pin.style.transform  = 'translateX(-50%) translateY(-32px) scale(0.5)';
+          pin.style.opacity    = '0';
+          setTimeout(() => {
+            pin.style.transition = 'transform 0.4s cubic-bezier(0.34,1.4,0.64,1), opacity 0.15s ease';
+            pin.style.transform  = 'translateX(-50%) scale(1)';
+            pin.style.opacity    = '1';
+          }, 80);
+        }
+
+        // Bounce landing target
+        void target.offsetWidth;
+        target.classList.add('just-landed');
+        target.addEventListener('animationend', () => target.classList.remove('just-landed'), { once: true });
+
+        // ── Fade out flyer ──
+        setTimeout(() => {
+          mover.style.transition = 'opacity 0.25s ease';
+          mover.style.opacity    = '0';
+          setTimeout(() => mover.remove(), 260);
+        }, 400);
+      }, 540);
+    }, 580);
+  }
+
+  function doSubmit() {
+    const text = ta.value.trim();
+    if (!text) return;
+    const sn = showname ? showname.checked : true;
+    const handle = sn ? (nameIn?.value || '').trim() : '';
+    const shared = share ? share.checked : true;
+    const notes = load();
+    notes.unshift({ id: Date.now(), text, handle, ts: Date.now(), shared });
+    save(notes);
+    document.dispatchEvent(new CustomEvent('jot:saved'));
+    ta.value = '';
+    if (nameIn) nameIn.value = '';
+    updateButtons();
+    if (confirm) {
+      confirm.textContent = handle
+        ? `Thank you, ${handle}. Your note is on the wall.`
+        : 'Your note is on the wall.';
+      setTimeout(() => { if (confirm) confirm.textContent = ''; }, 3000);
+    }
+    const goTo = (share && share.checked) ? 'wall' : 'journal';
+    flyNoteToWall(goTo);
+  }
+
+  if (write) write.addEventListener('click', doSubmit);
+  if (send)  send.addEventListener('click', doSubmit);
+  if (back)  back.addEventListener('click', () => showScreen('wall'));
+  if (formNav) formNav.addEventListener('click', () => showScreen('wall'));
+
+  // Mic
+  if (mic) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { mic.disabled = true; mic.style.opacity = '0.25'; }
+    else {
+      const rec = new SR();
+      rec.continuous = false; rec.interimResults = true; rec.lang = 'en-US';
+      let active = false;
+      mic.addEventListener('click', () => {
+        if (active) { rec.stop(); return; }
+        active = true; mic.style.opacity = '0.5'; rec.start();
+        rec.onresult = e => {
+          ta.value = Array.from(e.results).map(r => r[0].transcript).join('');
+          updateButtons();
+        };
+        rec.onend = () => { active = false; mic.style.opacity = ''; };
+      });
+    }
+  }
+})();
+
+// ═══════════════════════════════════
+//  Wall of thoughts
+// ═══════════════════════════════════
+(function initWall() {
+  const viewBtn  = document.getElementById('wall-write-btn');
+  const wallNav  = document.getElementById('wall-nav-btn');
+  const wallDeco = document.getElementById('wall-deco');
+
+  // "Write note" button — always navigate to the create-a-note form
+  if (viewBtn) viewBtn.addEventListener('click', () => showScreen('form'));
+
+  // Clicking a wall deco note opens the expand modal for that shared note
+  function wireWallNoteClick(wrap, note) {
+    wrap.setAttribute('aria-label', 'View community note');
+    wrap.addEventListener('click', () => {
+      if (wrap.classList.contains('dragging')) return;
+      if (note && window.openNoteExpand) window.openNoteExpand(note);
+    });
+  }
+
+  // "My Wall" nav → personal journal screen
+  if (wallNav) wallNav.addEventListener('click', () => showScreen('journal'));
+
+  // Keep wall-deco always visible; wire user-added filled notes for expand modal
+  function syncWallDeco() {
+    if (!wallDeco) return;
+    const shared = load().filter(n => n.shared);
+    // Always show the wall-deco (default notes are always visible)
+    wallDeco.setAttribute('aria-hidden', 'false');
+
+    // Wire user-added filled notes (non-default) to the expand modal
+    wallDeco.querySelectorAll('.wall-note-filled:not([data-default])').forEach((filled, i) => {
+      const note = shared[i] || (shared.length ? shared[0] : null);
+      if (!note) return;
+      // Avoid adding duplicate listeners
+      if (filled.dataset.wired) return;
+      filled.dataset.wired = '1';
+      filled.addEventListener('click', () => {
+        if (window.openNoteExpand) window.openNoteExpand(note, filled);
+      });
+    });
+  }
+
+  syncWallDeco();
+  document.addEventListener('jot:saved', syncWallDeco);
+})();
+// ═══════════════════════════════════
+//  My Self-reflecting Journal — dynamic notes
+// ═══════════════════════════════════
+(function initJournal() {
+  const journalNav = document.getElementById('journal-nav-btn');
+  if (journalNav) journalNav.addEventListener('click', () => showScreen('wall'));
+
+  const journalWriteBtn = document.getElementById('journal-write-btn');
+  if (journalWriteBtn) journalWriteBtn.addEventListener('click', () => showScreen('form'));
+
+  // Well-spread positions across the full screen for up to 24 notes
+  // Divided into 4 zones: top-band, upper-mid, lower-mid, bottom-band
+  // with left/center/right columns — ensures no clustering
+  const POSITIONS = [
+    // top band — far left → far right
+    { l:  4.0, t:  8.0, r: -5 }, { l: 24.0, t:  6.0, r:  3 },
+    { l: 44.0, t:  9.0, r: -2 }, { l: 63.0, t:  7.0, r:  6 },
+    { l: 82.0, t:  5.0, r: -4 },
+    // upper-mid band
+    { l:  7.0, t: 32.0, r:  4 }, { l: 28.0, t: 28.0, r: -6 },
+    { l: 50.0, t: 31.0, r:  3 }, { l: 70.0, t: 27.0, r: -5 },
+    { l: 87.0, t: 33.0, r:  7 },
+    // lower-mid band
+    { l:  3.0, t: 55.0, r: -3 }, { l: 22.0, t: 53.0, r:  5 },
+    { l: 44.0, t: 57.0, r: -4 }, { l: 66.0, t: 52.0, r:  4 },
+    { l: 84.0, t: 56.0, r: -6 },
+    // bottom band
+    { l:  8.0, t: 74.0, r:  3 }, { l: 30.0, t: 72.0, r: -5 },
+    { l: 52.0, t: 75.0, r:  2 }, { l: 72.0, t: 71.0, r: -3 },
+    { l: 88.0, t: 76.0, r:  5 },
+  ];
+
+  // Always use the full-paper note-center.svg so all journal notes
+  // show the complete hand-drawn paper illustration
+  const NOTE_SVG = 'assets/note-center.svg';
+
+  function escJ(s) { const d = document.createElement('div'); d.appendChild(document.createTextNode(s)); return d.innerHTML; }
+
+  window.renderJournalNotes = function() {
+    const container = document.getElementById('journal-notes-container');
+    const emptyState = document.getElementById('journal-empty-state');
+    if (!container) return;
+
+    const privateNotes = load().filter(n => !n.shared);
+
+    // Clear existing rendered notes (keep empty state)
+    container.querySelectorAll('.journal-note-wrap').forEach(el => el.remove());
+
+    if (privateNotes.length === 0) {
+      if (emptyState) emptyState.classList.add('visible');
+      return;
+    }
+    if (emptyState) emptyState.classList.remove('visible');
+
+    privateNotes.slice(0, POSITIONS.length).forEach((note, i) => {
+      const pos = POSITIONS[i];
+      const wrap = document.createElement('div');
+      wrap.className = 'journal-note-wrap';
+      // Same responsive width as wall notes: clamp(90px, 8.67%, 145px)
+      // Expressed as vw here since journal container is also full-width
+      wrap.style.cssText = `left:${pos.l}%;top:${pos.t}%;--rot:${pos.r}deg;transform:rotate(${pos.r}deg);width:clamp(90px,8.67vw,145px);`;
+      wrap.setAttribute('tabindex', '0');
+      wrap.setAttribute('role', 'button');
+      wrap.setAttribute('aria-label', 'View your note');
+      wrap.dataset.noteId = note.id;
+
+      wrap.innerHTML = `
+        <img class="wall-pin-dot" src="assets/pin.svg" width="38" height="39" aria-hidden="true" alt="">
+        <img class="journal-note-img" src="${NOTE_SVG}" alt="">
+        <div class="note-hover-preview">${escJ(note.text.slice(0, 80))}${note.text.length > 80 ? '…' : ''}</div>
+      `;
+
+      // Open expand modal on click — pass wrap as sourceEl for FLIP animation
+      wrap.addEventListener('click', () => openNoteExpand(note, wrap));
+      wrap.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openNoteExpand(note, wrap); }
+      });
+
+      container.appendChild(wrap);
+
+      // Wire drag (uses screen-journal as parent for % positioning)
+      if (window.wireJournalNoteDrag) window.wireJournalNoteDrag(wrap);
+    });
+  };
+
+  // Re-render when new notes arrive
+  document.addEventListener('jot:saved', () => {
+    window.renderJournalNotes && window.renderJournalNotes();
+    window.syncPhysicsNotes && window.syncPhysicsNotes('journal');
+  });
+
+  // Initial render — deferred so initNoteDrag() runs first and sets wireJournalNoteDrag
+  setTimeout(window.renderJournalNotes, 0);
+})();
+
+// ═══════════════════════════════════
+//  Note expand modal (Caveat cursive)
+// ═══════════════════════════════════
+(function initNoteExpand() {
+  const modal    = document.getElementById('note-expand-modal');
+  const textEl   = document.getElementById('note-expand-text');
+  const metaEl   = document.getElementById('note-expand-meta');
+  const closeBtn = document.getElementById('note-expand-close');
+  const letgoBtn = document.getElementById('note-expand-letgo');
+  if (!modal) return;
+
+  let currentNote  = null;
+  let sourceOrigin = null; // source element that opened the modal (for close FLIP)
+
+  // Extract rotation in degrees from an element's computed transform matrix
+  function getRotationDeg(el) {
+    const style = window.getComputedStyle(el);
+    const tx = style.transform || style.webkitTransform;
+    if (!tx || tx === 'none') return 0;
+    const m = tx.match(/matrix\(([^)]+)\)/);
+    if (!m) {
+      // physics inline: rotate(Xrad)
+      const r = el.style.transform.match(/rotate\(([^)]+)\)/);
+      if (r) {
+        const v = r[1];
+        return v.endsWith('rad') ? parseFloat(v) * 180 / Math.PI : parseFloat(v);
+      }
+      return 0;
+    }
+    const [a, b] = m[1].split(',').map(Number);
+    return Math.round(Math.atan2(b, a) * (180 / Math.PI));
+  }
+
+  window.openNoteExpand = function(note, sourceEl) {
+    currentNote  = note;
+    sourceOrigin = sourceEl || null;
+
+    textEl.textContent = note.text;
+    const d = new Date(note.ts || note.id);
+    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    metaEl.textContent = (note.handle ? note.handle + ' · ' : '') + dateStr;
+
+    // ── FLIP open animation ──────────────────────────────────────────────────
+    const card = modal.querySelector('.note-expand-card');
+
+    // 1. Show modal invisibly to measure the card's final resting rect
+    modal.classList.add('open');
+    modal.style.opacity = '0';
+    modal.style.pointerEvents = 'none';
+    card.style.opacity = '0';
+
+    // Force layout to get accurate measurements
+    void card.offsetHeight;
+    const finalRect = card.getBoundingClientRect();
+
+    // 2. Compute FLIP delta from source element (if known)
+    let fromKeyframe = { transform: 'scale(0.88) translateY(24px)', opacity: 0 };
+    if (sourceEl) {
+      const srcRect = sourceEl.getBoundingClientRect();
+      const dx  = (srcRect.left + srcRect.width  / 2) - (finalRect.left + finalRect.width  / 2);
+      const dy  = (srcRect.top  + srcRect.height / 2) - (finalRect.top  + finalRect.height / 2);
+      const scX = srcRect.width  / finalRect.width;
+      const scY = srcRect.height / finalRect.height;
+      const rot = getRotationDeg(sourceEl);
+      fromKeyframe = {
+        transform: `translate(${dx}px, ${dy}px) scale(${scX}, ${scY}) rotate(${rot}deg)`,
+        opacity: 0.7,
+      };
+    }
+
+    // 3. Reveal modal and run WAAPI animations
+    modal.style.opacity = '';
+    modal.style.pointerEvents = '';
+    card.style.opacity = '1';
+    modal.classList.add('note-expand-modal--animating');
+
+    // Backdrop fade
+    modal.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: 200, easing: 'ease', fill: 'none',
+    });
+
+    // Card FLIP morph
+    const cardAnim = card.animate([
+      fromKeyframe,
+      { transform: 'translate(0,0) scale(1) rotate(0deg)', opacity: 1 },
+    ], {
+      duration: sourceEl ? 480 : 300,
+      easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+      fill: 'none',
+    });
+
+    cardAnim.finished.then(() => {
+      modal.classList.remove('note-expand-modal--animating');
+    });
+
+    closeBtn.focus();
+  };
+
+  function closeModal() {
+    const card    = modal.querySelector('.note-expand-card');
+    const src     = sourceOrigin;
+    sourceOrigin  = null;
+
+    // ── FLIP close: contract back toward the source note ───────────────────
+    let toKeyframe = { transform: 'scale(0.9) translateY(16px)', opacity: 0 };
+    if (src) {
+      const srcRect  = src.getBoundingClientRect();
+      const cardRect = card.getBoundingClientRect();
+      const dx  = (srcRect.left + srcRect.width  / 2) - (cardRect.left + cardRect.width  / 2);
+      const dy  = (srcRect.top  + srcRect.height / 2) - (cardRect.top  + cardRect.height / 2);
+      const scX = srcRect.width  / cardRect.width;
+      const scY = srcRect.height / cardRect.height;
+      const rot = getRotationDeg(src);
+      toKeyframe = {
+        transform: `translate(${dx}px, ${dy}px) scale(${scX}, ${scY}) rotate(${rot}deg)`,
+        opacity: 0,
+      };
+    }
+
+    const closeAnim = card.animate([
+      { transform: 'translate(0,0) scale(1) rotate(0deg)', opacity: 1 },
+      toKeyframe,
+    ], { duration: src ? 360 : 220, easing: 'cubic-bezier(0.4, 0, 0.8, 0.2)', fill: 'forwards' });
+
+    modal.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: src ? 300 : 200, easing: 'ease', fill: 'forwards',
+    });
+
+    closeAnim.finished.then(() => {
+      modal.classList.remove('open');
+      // Cancel all WAAPI fills so CSS resting state governs on next open
+      modal.getAnimations().forEach(a => a.cancel());
+      card.getAnimations().forEach(a => a.cancel());
+      currentNote = null;
+    });
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  letgoBtn.addEventListener('click', () => {
+    if (!currentNote) return;
+    // Physics "float up" if active, then delete
+    if (window.letGoPhysicsNote) {
+      window.letGoPhysicsNote(currentNote.id, () => {
+        deleteNoteById(currentNote.id);
+        closeModal();
+      });
+    } else {
+      deleteNoteById(currentNote.id);
+      closeModal();
+    }
+  });
+
+  function deleteNoteById(id) {
+    const arr = load().filter(n => n.id !== id);
+    save(arr);
+    window.renderJournalNotes && window.renderJournalNotes();
+    document.dispatchEvent(new CustomEvent('jot:deleted', { detail: { id } }));
+  }
+
+  // Wire wall filled notes for expand — pass sourceEl for FLIP animation
+  document.addEventListener('click', e => {
+    const filled = e.target.closest('.wall-note-filled');
+    if (!filled) return;
+    if (filled.classList.contains('phys-driven')) return; // shouldn't occur, kept as safety guard
+    const text = filled.querySelector('.note-hover-preview')?.textContent || '';
+    openNoteExpand({ text, handle: '', ts: Date.now(), id: filled.dataset.noteId || 0 }, filled);
+  });
+})();
+
+// ═══════════════════════════════════
+//  Profanity / content filter
+// ═══════════════════════════════════
+(function initContentFilter() {
+  // Basic word list — expand as needed
+  const BLOCKED = ['fuck','shit','bitch','asshole','cunt','nigger','faggot','retard','kike','spic','chink'];
+  const re = new RegExp(`\\b(${BLOCKED.join('|')})\\b`, 'i');
+
+  window.contentPolicyCheck = function(text) {
+    return !re.test(text);
+  };
+
+  // Patch doSubmit — intercept via the textarea
+  const ta = document.getElementById('l1-ta');
+  const confirm = document.getElementById('l1-confirm');
+  if (!ta) return;
+
+  // We hook at the form level: override by monkey-patching the send/write buttons
+  const patchBtn = btn => {
+    if (!btn) return;
+    const original = btn.onclick;
+    btn.addEventListener('click', e => {
+      if (!contentPolicyCheck(ta.value)) {
+        e.stopImmediatePropagation();
+        if (confirm) {
+          confirm.textContent = 'Please keep this a safe, respectful space. No profanity or harmful language.';
+          confirm.style.color = '#c0392b';
+          setTimeout(() => { confirm.textContent = ''; confirm.style.color = ''; }, 4000);
+        }
+      }
+    }, true); // capture phase — fires before other listeners
+  };
+
+  patchBtn(document.getElementById('l1-write'));
+  patchBtn(document.getElementById('l1-send'));
+})();
+
+// ═══════════════════════════════════
+//  Note drag-to-reposition
+// ═══════════════════════════════════
+(function initNoteDrag() {
+  const screenWall = document.getElementById('screen-wall');
+  const wallDeco   = document.getElementById('wall-deco');
+  if (!wallDeco || !screenWall) return;
+
+  // Generic drag wiring — parentEl is the positioning container
+  function makeDragWire(parentEl) {
+    return function wireWrapDrag(wrap) {
+      let dragging  = false;
+      let hasDragged = false;
+      let startMouseX, startMouseY, startLeft, startTop;
+
+      wrap.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        dragging   = true;
+        hasDragged = false;
+
+        const parentRect = parentEl.getBoundingClientRect();
+        const wrapRect   = wrap.getBoundingClientRect();
+
+        startMouseX = e.clientX;
+        startMouseY = e.clientY;
+        startLeft = wrapRect.left - parentRect.left;
+        startTop  = wrapRect.top  - parentRect.top;
+
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', e => {
+        if (!dragging) return;
+        const dx = e.clientX - startMouseX;
+        const dy = e.clientY - startMouseY;
+
+        if (!hasDragged && (Math.abs(dx) > 4 || Math.abs(dy) > 4)) {
+          hasDragged = true;
+          wrap.classList.add('dragging');
+        }
+
+        if (hasDragged) {
+          const parentRect = parentEl.getBoundingClientRect();
+          wrap.style.left = ((startLeft + dx) / parentRect.width  * 100).toFixed(2) + '%';
+          wrap.style.top  = ((startTop  + dy) / parentRect.height * 100).toFixed(2) + '%';
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (!dragging) return;
+        dragging = false;
+        if (hasDragged) {
+          wrap.classList.remove('dragging');
+          wrap.addEventListener('click', e => e.stopPropagation(), { once: true, capture: true });
+        }
+      });
+    };
+  }
+
+  const wireWrapDrag = makeDragWire(screenWall);
+
+  // Expose journal drag wirer so renderJournalNotes can use it
+  const screenJournal = document.getElementById('screen-journal');
+  window.wireJournalNoteDrag = screenJournal ? makeDragWire(screenJournal) : wireWrapDrag;
+
+  wallDeco.querySelectorAll('.wall-deco-img-wrap').forEach(wireWrapDrag);
+  // .wall-note-filled drag is handled by initWallPhysics below
+
+  // Expose wirer so physics fallback (reduced-motion) can use it
+  window._wireWallNoteDrag = wireWrapDrag;
+
+  // Re-wire blank writing slots added dynamically
+  const obs = new MutationObserver(mutations => {
+    mutations.forEach(m => {
+      m.addedNodes.forEach(node => {
+        if (!node.classList) return;
+        if (node.classList.contains('wall-deco-img-wrap')) wireWrapDrag(node);
+      });
+    });
+  });
+  obs.observe(wallDeco, { childList: true });
+})();
+
+// ═══════════════════════════════════
+//  Hover-replace sticky notes
+// ═══════════════════════════════════
+(function initNoteHoverReplace() {
+  const wallDeco = document.getElementById('wall-deco');
+  if (!wallDeco) return;
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Build popover ──────────────────────────────────
+  const popover = document.createElement('div');
+  popover.className = 'note-popover';
+  popover.setAttribute('role', 'dialog');
+  popover.setAttribute('aria-label', 'Write your note');
+  popover.innerHTML = `
+    <p class="note-popover-header">Your thought</p>
+    <textarea class="note-popover-ta" maxlength="200"
+      placeholder="Write something…" rows="4"></textarea>
+    <div class="note-popover-divider"></div>
+    <div class="note-popover-footer">
+      <span class="note-popover-char">0 / 200</span>
+      <div class="note-popover-actions">
+        <button class="note-popover-cancel">Cancel</button>
+        <button class="note-popover-pin" disabled>Pin it ↑</button>
+      </div>
+    </div>`;
+  document.body.appendChild(popover);
+
+  const ta        = popover.querySelector('.note-popover-ta');
+  const pinBtn    = popover.querySelector('.note-popover-pin');
+  const cancelBtn = popover.querySelector('.note-popover-cancel');
+  const charEl    = popover.querySelector('.note-popover-char');
+  let   activeWrap = null;
+
+  // ── Char count + enable/disable ───────────────────
+  ta.addEventListener('input', () => {
+    const len = ta.value.length;
+    charEl.textContent = len + ' / 200';
+    pinBtn.disabled = ta.value.trim().length === 0;
+  });
+
+  // ── Keyboard shortcuts ─────────────────────────────
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!pinBtn.disabled) pinIt(); }
+    if (e.key === 'Escape') closePopover();
+  });
+
+  cancelBtn.addEventListener('click', closePopover);
+  pinBtn.addEventListener('click', pinIt);
+
+  // ── Open popover positioned near the note ─────────
+  function openPopover(wrap) {
+    activeWrap = wrap;
+    ta.value = '';
+    pinBtn.disabled = true;
+    charEl.textContent = '0 / 200';
+
+    // Show off-screen first to measure height
+    popover.style.visibility = 'hidden';
+    popover.style.display = 'block';
+    const ph = popover.offsetHeight; // ~160px
+    const pw = popover.offsetWidth;  // 230px
+    popover.style.display = 'none';
+    popover.style.visibility = '';
+
+    const rect = wrap.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    // Default: below the note
+    let top  = rect.bottom + 12;
+    let left = rect.left + rect.width / 2 - pw / 2;
+
+    // Flip above if not enough room below
+    if (top + ph > vh - 10) top = rect.top - ph - 12;
+
+    // Clamp horizontally
+    left = Math.max(10, Math.min(left, vw - pw - 10));
+
+    popover.style.left = left + 'px';
+    popover.style.top  = top + 'px';
+    popover.style.display = 'block';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        popover.classList.add('open');
+        ta.focus();
+      });
+    });
+  }
+
+  function closePopover() {
+    popover.classList.remove('open');
+    setTimeout(() => {
+      if (!popover.classList.contains('open')) popover.style.display = 'none';
+      activeWrap = null;
+    }, 220);
+  }
+
+  // ── Replace note with filled version ──────────────
+  function pinIt() {
+    const text = ta.value.trim();
+    if (!text || !activeWrap) return;
+    const wrap = activeWrap;
+
+    // Capture dimensions BEFORE closePopover() to guard against detached nodes
+    // (syncWallDeco cloneNode can replace wrap in the DOM between popover open and pin)
+    const rect = wrap.getBoundingClientRect();
+    const w = wrap.offsetWidth  || rect.width  || 125;
+    closePopover();
+
+    const filled = document.createElement('div');
+    filled.className = 'wall-note-filled';
+    // Copy only the positional props from the slot (left, top, --rot)
+    // Width is handled entirely by the CSS class (clamp responsive)
+    const srcStyle = wrap.style;
+    filled.style.left = srcStyle.left || wrap.style.cssText.match(/left:\s*([^;]+)/)?.[1] || '50%';
+    filled.style.top  = srcStyle.top  || wrap.style.cssText.match(/top:\s*([^;]+)/)?.[1]  || '10%';
+    const rot = wrap.style.getPropertyValue('--rot') || '0deg';
+    filled.style.setProperty('--rot', rot);
+
+    const preview = text.slice(0, 120) + (text.length > 120 ? '…' : '');
+    filled.innerHTML = `
+      <img class="wall-note-bg-img" src="assets/note-center.svg" width="154" height="156" aria-hidden="true" alt="">
+      <img class="wall-pin-dot" src="assets/pin.svg" width="38" height="39" aria-hidden="true" alt="">
+      <div class="note-hover-preview">${esc(preview)}</div>`;
+
+    // Spring entrance: start scaled-out, then spring in
+    filled.style.transform = 'rotate(var(--rot,0deg)) scale(0)';
+    filled.style.transition = 'none';
+
+    // Guard: if wrap was detached by syncWallDeco, fall back to appending to wallDeco
+    const parent = wrap.parentNode || wallDeco;
+    if (wrap.parentNode) {
+      parent.insertBefore(filled, wrap);
+      wrap.remove();
+    } else {
+      wallDeco.appendChild(filled);
+    }
+
+    // Trigger spring after insert
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        filled.style.transition = 'transform 0.5s cubic-bezier(0.34,1.56,0.64,1), filter 0.3s ease';
+        filled.style.transform  = 'rotate(var(--rot,0deg)) scale(1)';
+        filled.style.filter     = 'drop-shadow(0 10px 24px rgba(0,0,0,0.15))';
+        setTimeout(() => { filled.style.filter = ''; }, 600);
+      });
+    });
+
+    // Persist so notes survive navigation between screens
+    saveFilledNotes();
+  }
+
+  // ── Persist filled notes to sessionStorage ─────────
+  function saveFilledNotes() {
+    const notes = [];
+    wallDeco.querySelectorAll('.wall-note-filled').forEach(n => {
+      notes.push({
+        style: n.style.cssText,
+        text: n.querySelector('.note-hover-preview')?.textContent || '',
+        w: n.style.width, h: n.style.height
+      });
+    });
+    sessionStorage.setItem('jot_filled_notes', JSON.stringify(notes));
+  }
+  // Expose globally so physics module can persist positions after drag
+  window._saveFilledNotes = saveFilledNotes;
+
+  // ── Event delegation on wallDeco (survives syncWallDeco cloneNode calls) ──
+  // One delegated listener so re-wiring after any DOM replacement is never needed.
+  wallDeco.addEventListener('click', e => {
+    const wrap = e.target.closest('.wall-deco-img-wrap');
+    if (wrap && !wrap.classList.contains('dragging')) {
+      e.stopPropagation();
+      openPopover(wrap);
+    }
+  });
+  wallDeco.addEventListener('keydown', e => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const wrap = e.target.closest('.wall-deco-img-wrap');
+    if (wrap) { e.preventDefault(); openPopover(wrap); }
+  });
+
+  // ── Close on outside click ─────────────────────────
+  document.addEventListener('click', e => {
+    if (popover.style.display === 'none') return;
+    if (!popover.contains(e.target) && !e.target.closest('.wall-deco-img-wrap')) {
+      closePopover();
+    }
+  }, true);
+})();
+
+// ═══════════════════════════════════
+//  Floating note hover preview
+//  Works for: .wall-note-filled, .journal-note-wrap, .wall-deco-img-wrap
+//  Uses position:fixed so it escapes overflow:hidden on .app-screen
+// ═══════════════════════════════════
+(function initFloatPreview() {
+  const floater = document.getElementById('note-float-preview');
+  if (!floater) return;
+
+  let hideTimer   = null;
+  let currentNote = null; // the note the floater is attached to
+
+  const SELECTOR = '.wall-note-filled, .journal-note-wrap';
+
+  function getText(el) {
+    const preview = el.querySelector('.note-hover-preview');
+    return preview ? preview.textContent.trim() : '';
+  }
+
+  function position(el) {
+    const rect = el.getBoundingClientRect();
+    const fw   = 220;
+    const fh   = floater.offsetHeight || 48;
+    const GAP  = 12;
+
+    let top  = rect.top - fh - GAP;
+    if (top < 8) top = rect.bottom + GAP; // flip below if near top edge
+
+    let left = rect.left + rect.width / 2 - fw / 2;
+    left = Math.max(8, Math.min(left, window.innerWidth - fw - 8));
+
+    floater.style.left = left + 'px';
+    floater.style.top  = top  + 'px';
+  }
+
+  function show(el) {
+    const text = getText(el);
+    if (!text) return;
+
+    clearTimeout(hideTimer);
+    currentNote = el;
+    floater.textContent = text;
+    position(el);
+    floater.classList.add('visible');
+  }
+
+  function hide() {
+    hideTimer = setTimeout(() => {
+      floater.classList.remove('visible');
+      currentNote = null;
+    }, 120);
+  }
+
+  // Event delegation — show on hover
+  document.addEventListener('mouseover', e => {
+    const note = e.target.closest(SELECTOR);
+    if (note) show(note);
+  });
+
+  document.addEventListener('mouseout', e => {
+    const note = e.target.closest(SELECTOR);
+    // Only hide if we're leaving the note entirely (not just entering a child)
+    if (note && !note.contains(e.relatedTarget)) hide();
+  });
+
+  // Track drag: reposition floater in real time as note moves
+  // Works for CSS-drag (.dragging) and physics-drag (.phys-grab)
+  document.addEventListener('mousemove', () => {
+    if (!currentNote) return;
+    const isDragging = currentNote.classList.contains('dragging') || currentNote.classList.contains('phys-grab');
+    if (isDragging) {
+      clearTimeout(hideTimer);
+      position(currentNote);
+      floater.classList.add('visible');
+    }
+  });
+
+  // Hide when drag ends and mouse leaves note area
+  document.addEventListener('mouseup', () => {
+    if (currentNote && !currentNote.matches(':hover')) {
+      hide();
+    }
+  });
+
+  floater.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+  floater.addEventListener('mouseleave', hide);
+})();
+
+// ═══════════════════════════════════
+//  Wall Physics — sleeping notes module
+//  Matter.js 0.19.0 already loaded in <head>
+// ═══════════════════════════════════
+(function initWallPhysics() {
+  if (typeof Matter === 'undefined') return;
+
+  const screenWall = document.getElementById('screen-wall');
+  const wallDeco   = document.getElementById('wall-deco');
+  if (!screenWall || !wallDeco) return;
+
+  const skipMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ── Reduced-motion fallback: plain CSS drag ──────────────────────────
+  if (skipMotion) {
+    // Wire simple drag for all .wall-note-filled using the wirer from initNoteDrag
+    function wireReducedDrag() {
+      wallDeco.querySelectorAll('.wall-note-filled').forEach(el => {
+        window._wireWallNoteDrag?.(el);
+      });
+    }
+    wireReducedDrag();
+    // Also wire new notes added dynamically
+    new MutationObserver(muts => muts.forEach(m => m.addedNodes.forEach(node => {
+      if (node.classList?.contains('wall-note-filled')) window._wireWallNoteDrag?.(node);
+    }))).observe(wallDeco, { childList: true });
+    return;
+  }
+
+  const { Engine, Bodies, Body, Composite, Events, Sleeping } = Matter;
+
+  // ── Engine: sleeping enabled, zero gravity (notes are pinned to a wall) ──
+  const engine = Engine.create({ enableSleeping: true, gravity: { x: 0, y: 0 } });
+
+  let pairs    = [];   // { body, el }[]
+  let dragPair    = null;
+  let dragOffX    = 0, dragOffY = 0;
+  let dragStartX  = 0, dragStartY = 0, dragStartTs = 0;
+  let dragMoved   = false;
+
+  // ── Helpers ─────────────────────────────────────────────────────────────
+  function wallOrigin() {
+    const r = screenWall.getBoundingClientRect();
+    return { left: r.left + window.scrollX, top: r.top + window.scrollY, w: r.width, h: r.height };
+  }
+
+  function elToCenter(el) {
+    const wo = wallOrigin();
+    const r  = el.getBoundingClientRect();
+    return {
+      x: r.left + window.scrollX + r.width  / 2 - wo.left,
+      y: r.top  + window.scrollY + r.height / 2 - wo.top,
+      w: r.width,
+      h: r.height,
+    };
+  }
+
+  // Read the current inline rotate value from a note element
+  function parseInlineAngle(el) {
+    const t = el.style.transform || '';
+    const m = t.match(/rotate\(([^)]+)\)/);
+    if (!m) return 0;
+    const v = m[1];
+    return v.endsWith('rad') ? parseFloat(v) : parseFloat(v) * Math.PI / 180;
+  }
+
+  // ── Create physics body at note's current on-screen position ────────────
+  function makeBody(el) {
+    const c = elToCenter(el);
+    const bw = Math.max(c.w || 90,  80);
+    const bh = Math.max(c.h || 110, 90);
+    const body = Bodies.rectangle(c.x, c.y, bw, bh, {
+      chamfer:        { radius: 6 },
+      restitution:    0.04,
+      friction:       0.70,
+      frictionAir:    0.14,    // high air friction → quick settling
+      angle:          parseInlineAngle(el),
+      label:          'wall-note',
+      sleepThreshold: 20,      // ~20 frames at near-zero velocity → sleep
+    });
+    Body.setVelocity(body, { x: 0, y: 0 });
+    Body.setAngularVelocity(body, 0);
+    Sleeping.set(body, true);  // start sleeping immediately
+    return body;
+  }
+
+  // ── Sync physics body → DOM position ────────────────────────────────────
+  function syncDOM({ body, el }) {
+    const pw = el.offsetWidth  || 90;
+    const ph = el.offsetHeight || 110;
+    el.style.left      = (body.position.x - pw / 2) + 'px';
+    el.style.top       = (body.position.y - ph / 2) + 'px';
+    el.style.transform = `rotate(${body.angle}rad)`;
+  }
+
+  // ── Register a note element into the physics world ──────────────────────
+  function addNote(el, delayMs) {
+    el.classList.add('phys-driven', 'phys-sleeping');
+    el.setAttribute('aria-description', 'Drag to reposition');
+    const go = () => {
+      // Read position after CSS animations have settled
+      const body = makeBody(el);
+      Composite.add(engine.world, body);
+      pairs.push({ body, el });
+    };
+    delayMs > 0 ? setTimeout(go, delayMs) : go();
+  }
+
+  // ── Sleep/wake events drive CSS classes ─────────────────────────────────
+  Events.on(engine, 'sleepStart', ({ source: body }) => {
+    const p = pairs.find(p => p.body === body);
+    if (!p) return;
+    p.el.classList.add('phys-sleeping');
+    p.el.classList.remove('phys-awake');
+    // Persist new position so it survives navigation and reload
+    setTimeout(() => window._saveFilledNotes?.(), 50);
+  });
+
+  Events.on(engine, 'sleepEnd', ({ source: body }) => {
+    const p = pairs.find(p => p.body === body);
+    if (!p) return;
+    p.el.classList.remove('phys-sleeping');
+    p.el.classList.add('phys-awake');
+  });
+
+  // ── Pointer drag — pointerdown/move/up on wallDeco ──────────────────────
+  // Use capture phase so this fires before any bubble-phase listeners on child elements
+  wallDeco.addEventListener('pointerdown', e => {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    const note = e.target.closest('.wall-note-filled.phys-driven');
+    if (!note) return;
+    const pair = pairs.find(p => p.el === note);
+    if (!pair) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Track tap start for drag-vs-click detection
+    dragStartX  = e.clientX;
+    dragStartY  = e.clientY;
+    dragStartTs = Date.now();
+    dragMoved   = false;
+
+    // Offset from note center to pointer (in viewport coords, scrollY-aware)
+    const r  = note.getBoundingClientRect();
+    const cx = r.left + r.width  / 2;
+    const cy = r.top  + r.height / 2;
+    dragOffX = e.clientX - cx;
+    dragOffY = e.clientY - cy;
+
+    dragPair = pair;
+    Sleeping.set(pair.body, false);
+    Body.setVelocity(pair.body,        { x: 0, y: 0 });
+    Body.setAngularVelocity(pair.body, 0);
+
+    note.classList.add('phys-grab');
+    note.classList.remove('phys-sleeping', 'phys-awake');
+    note.style.zIndex = '60';
+
+    try { wallDeco.setPointerCapture(e.pointerId); } catch (_) {}
+  }, { capture: true });
+
+  document.addEventListener('pointermove', e => {
+    if (!dragPair) return;
+    const dist = Math.hypot(e.clientX - dragStartX, e.clientY - dragStartY);
+    if (dist > 6) dragMoved = true;
+    if (!dragMoved) return; // don't actually move until threshold passed
+    const wo  = wallOrigin();
+    // Target center in wall-relative coords
+    const x   = (e.clientX + window.scrollX) - wo.left - dragOffX;
+    const y   = (e.clientY + window.scrollY) - wo.top  - dragOffY;
+    Body.setPosition(dragPair.body, { x, y });
+    Body.setVelocity(dragPair.body, { x: 0, y: 0 });
+    syncDOM(dragPair); // instant DOM update during drag (no rAF lag)
+  });
+
+  function endDrag(e) {
+    if (!dragPair) return;
+    const p       = dragPair;
+    const wasTap  = !dragMoved && (Date.now() - dragStartTs) < 320;
+    dragPair      = null;
+    dragMoved     = false;
+
+    p.el.classList.remove('phys-grab');
+    p.el.style.zIndex = '';
+
+    if (wasTap) {
+      // Treat as click: open expand modal with FLIP from this note
+      const text = p.el.querySelector('.note-hover-preview')?.textContent || '';
+      const note = { text, handle: '', ts: Date.now(), id: p.el.dataset.noteId || 0 };
+      // Put body back to sleep quietly
+      Sleeping.set(p.body, true);
+      if (window.openNoteExpand) window.openNoteExpand(note, p.el);
+      return;
+    }
+
+    // Normal drag end: gentle settle velocity → eventual sleep
+    Body.setVelocity(p.body, {
+      x: (Math.random() - 0.5) * 1.0,
+      y: (Math.random() - 0.5) * 1.0,
+    });
+    Body.setAngularVelocity(p.body, (Math.random() - 0.5) * 0.016);
+    Sleeping.set(p.body, false); // engine re-evaluates → eventual sleep
+  }
+
+  document.addEventListener('pointerup',     endDrag);
+  document.addEventListener('pointercancel', endDrag);
+
+  // ── rAF engine loop ──────────────────────────────────────────────────────
+  let lastTs = 0;
+  (function loop(now) {
+    requestAnimationFrame(loop);
+    // Pause physics when wall screen is hidden (save CPU)
+    if (screenWall.style.display === 'none') return;
+    const dt = Math.min(now - lastTs || 16, 32); // cap at ~30fps minimum
+    lastTs = now;
+    Engine.update(engine, dt);
+    // Only sync DOM for awake bodies (sleeping ones already at final position)
+    pairs.forEach(p => {
+      if (!p.body.isSleeping) syncDOM(p);
+    });
+  })(0);
+
+  // ── Bootstrap existing notes — CSS drag only, no physics ────────────────
+  // .wall-note-filled notes use CSS dangle + CSS drag; physics is not used for them.
+  function wireFilledDrag() {
+    wallDeco.querySelectorAll('.wall-note-filled').forEach(el => {
+      window._wireWallNoteDrag?.(el);
+    });
+  }
+  wireFilledDrag();
+
+  // ── Watch for new notes added by pinIt() ─────────────────────────────────
+  new MutationObserver(muts => muts.forEach(m => m.addedNodes.forEach(node => {
+    if (node.classList?.contains('wall-note-filled')) {
+      // Brief delay so entrance animation starts before drag is wired
+      setTimeout(() => window._wireWallNoteDrag?.(node), 680);
+    }
+  }))).observe(wallDeco, { childList: true });
+
+  // ── Recompute body positions on resize ───────────────────────────────────
+  window.addEventListener('resize', () => {
+    // Small delay so CSS layout recalculates first
+    setTimeout(() => {
+      pairs.forEach(p => {
+        const c = elToCenter(p.el);
+        if (c.w && c.h) Body.setPosition(p.body, { x: c.x, y: c.y });
+      });
+    }, 120);
+  });
+
+  // ── Update hover-preview floater position during physics drag ────────────
+  // (The existing initFloatPreview watches 'mousemove' for .dragging class;
+  //  physics drag uses .phys-grab instead — patch the selector check here)
+  document.addEventListener('mousemove', () => {
+    const floater = document.getElementById('note-float-preview');
+    if (!floater || !dragPair) return;
+    // Reuse the floater's existing position logic by triggering a synthetic
+    // check — we just hide the floater during active drag for clarity
+    floater.classList.remove('visible');
+  });
+
+})();
+
+</script>
+
+
+</body>
+</html>
